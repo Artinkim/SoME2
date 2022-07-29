@@ -5,7 +5,7 @@ class LorenzButterfly(ThreeDScene):
     coords = (1, 1, 1)
     axes = ThreeDAxes(x_range=[-100, 100, 10], y_range=[-100, 100, 10], z_range=[-100, 100, 10])
     a, b, c, d = 10, 25, 8/3, 0.01
-    totalTime = 36
+    totalTime, ups = 30, 5
 
     def next(self):
         a, b, c, d = self.a, self.b, self.c, self.d  
@@ -18,7 +18,7 @@ class LorenzButterfly(ThreeDScene):
         a, b, c, d = self.a, self.b, self.c, self.d        
 
         d1 = Dot3D(point=axes.coords_to_point(1, 1, 1), color=RED)
-        for _ in range(5):
+        for _ in range(self.ups):
             d1.add_updater(lambda p: p.move_to(axes.c2p(self.next())[0]))
         def update_path1(path):
             previous_path = path.copy()
@@ -34,7 +34,7 @@ class LorenzButterfly(ThreeDScene):
         self.add(d1, path1)
 
         d2 = Dot3D(point=axes.coords_to_point(1, 1, 1.05), color=BLUE)
-        for _ in range(5):
+        for _ in range(self.ups):
             d2.add_updater(lambda p: p.move_to(axes.c2p(self.next())[0]))
         def update_path2(path):
             previous_path = path.copy()
@@ -53,5 +53,5 @@ class LorenzButterfly(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=35 * DEGREES)
         # self.add_updater(lambda _: self.set_camera_orientation(phi=75 * DEGREES, theta=360 * DEGREES * t.get_value()))
         self.add(axes)
-        self.begin_ambient_camera_rotation(0.1)
+        self.begin_ambient_camera_rotation(0.2)
         self.play(t.animate.set_value(1), run_time=self.totalTime)
