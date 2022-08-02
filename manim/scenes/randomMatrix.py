@@ -62,7 +62,7 @@ class RandomMatrix(Scene):
         self.wait(1)
         self.play(Transform(a, m[4]))
         b = Brace(a)
-        b1tex, b2tex = b.get_tex("NxP"), b.get_tex("NxN")
+        b1tex, b2tex = b.get_tex("N\\text{x}P"), b.get_tex("N\\text{x}N")
         self.add(b, b1tex)
         self.wait(1)
         self.play(Transform(a, m[5]), Transform(b1tex, b2tex))
