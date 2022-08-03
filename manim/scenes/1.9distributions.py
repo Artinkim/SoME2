@@ -1,7 +1,7 @@
 from manim import *
 from scipy import linalg
 
-def CreateDistributionGraph1():
+def CreateDistributionGraph1(): # these graphs are hard coded bc coordinates are weird for bar graphs
     line = NumberLine(
             x_range=[0.1, 5, 101],
             length=10,
@@ -14,7 +14,7 @@ def CreateDistributionGraph1():
 
     return FunctionGraph(lambda x: curve(line.p2n((x,0,0)))*5).move_to(line) # hardcoded
 
-def CreateDistributionGraph2():
+def CreateDistributionGraph2(): # these graphs are hard coded bc coordinates are weird for bar graphs
     line = NumberLine(
             x_range=[0.1, 5, 101],
             length=10,
@@ -29,7 +29,6 @@ def CreateDistributionGraph2():
 
 class Distribution1(Scene):
     def construct(self):
-
         N = 2 # size of matrix   
         niter = 5000 # number of samples
         evals = np.zeros((niter,N))
@@ -58,7 +57,6 @@ class Distribution1(Scene):
   
 class Distribution2(Scene):
     def construct(self):
-
         N = 5000 # size of matrix   
         niter = 1 # number of samples
         evals = np.zeros((niter,N))
@@ -81,7 +79,6 @@ class Distribution2(Scene):
 
 class Distribution3(Scene):
     def construct(self):
-
         N = 5000 # size of matrix   
         niter = 100 # number of samples
         evals = np.zeros((niter,N))
