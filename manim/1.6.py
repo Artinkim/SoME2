@@ -72,7 +72,7 @@ class Vectors(ThreeDScene):
         self.add_fixed_in_frame_mobjects(ul1)
         self.add(axes,vector1,vector2,v1_label,v2_label,area,area_val)
         self.move_camera(phi=45 * DEGREES,theta=-75 * DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.5)
+        #self.begin_ambient_camera_rotation(rate=0.5)
 
         # apply matrix transformation and leave copy
         vec1 = np.matmul(matrix,vec1) 
