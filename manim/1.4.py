@@ -37,12 +37,12 @@ class RandomMatrix(Scene):
         m.append(MobjectMatrix([[MathTex(m[-1][0][size[1]*x+y].tex_string+np.random.choice(signs)+"...") for y in range(size[1])] for x in range(size[0])], h_buff = 5.4))
         m.append(MobjectMatrix([
             [MathTex("M_{11}"), MathTex("M_{12}"), MathTex("..."), MathTex("M_{1P}")],
-            [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{1P}")],
+            [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2P}")],
             [MathTex(), MathTex(), MathTex("..."), MathTex()],
             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NP}")]], h_buff = 1.6))
         m.append(MobjectMatrix([
             [MathTex("M_{11}"), MathTex("M_{12}"), MathTex("..."), MathTex("M_{1N}")],
-            [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{1N}")],
+            [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2N}")],
             [MathTex(), MathTex(), MathTex("..."), MathTex()],
             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NN}")]], h_buff = 1.6))
 
