@@ -1,28 +1,40 @@
 from manim import *
 import numpy as np
 
-class ChangingMatrix(MobjectMatrix):
+class Functor:
+    x: int
+    y: int
+    matrix: np.array
+    vt: ValueTracker
     
-        def __init__(self, matrix, vt):
-            self.size = [len(matrix[0]),len(matrix[0][0])]
-            self.nums = [[DecimalNumber(matrix[0][x][y]) for x in range(self.size[1])] for y in range(self.size[0])]       
+    def __init__(self, x, y, matrix, vt):
+        self.x, self.y, self.matrix, self.vt = x, y, matrix, vt
+    
+    def __call__(self, d):
+        d.set_value(self.matrix[int(self.vt.get_value())][self.x][self.y])
 
-            # for x in range(self.size[0]):
-            #     for y in range(self.size[1]):
-            #         self.nums[x][y].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][x][y]))
+class ChangingMatrix(MobjectMatrix):
+    def __init__(self, matrix, vt):
+        self.size = [len(matrix[0]),len(matrix[0][0])]
+        self.nums = [[DecimalNumber() for x in range(self.size[1])] for y in range(self.size[0])]      
+         
+        for x in range(self.size[0]):
+            for y in range(self.size[1]):
+                self.nums[x][y].add_updater(Functor(x, y, matrix, vt))
 
-            self.nums[0][0].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][0][0]))
-            self.nums[0][1].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][0][1]))
-            self.nums[1][0].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][1][0]))
-            self.nums[1][1].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][1][1]))
-
-            super().__init__(self.nums, h_buff=2)
-
-        def get(self,v,x,y):
-                return self.matrix[v][x][y]
+        super().__init__(self.nums, h_buff=2)
         
-
-class ShowEnsemble(Scene):
+# def stretch(mob, factor):
+#         target = mob.copy()
+#         target.stretch_about_point(factor, 0, mob.get_start())
+#         total_factor = (target.number_to_point(1)-mob.get_start())[0]
+#         # for number in target.get_tick_marks():
+#         #     number.scale(1./factor)
+#         #     if total_factor < 0.7:
+#         #         number.stretch_in_place(total_factor)
+        
+#         return target
+class ShowEnsemble(MovingCameraScene):
     def construct(self):
         N = 2 # size of matrix   
         niter = 500 # number of samples
@@ -31,23 +43,58 @@ class ShowEnsemble(Scene):
         matricies = np.zeros((niter,N,N))
         for i in range(niter):
             matricies[i] = np.random.randn(N,N)
-            dets[i] = np.linalg.det(matricies[i]*matricies[i])
-            histograms[i] = np.histogram(dets[:i+1],bins=np.linspace(-10, 10,101),density=True)[0]
+            dets[i] = np.trace(matricies[i]*matricies[i])
+            histograms[i] = np.histogram(dets[:i+1],bins=np.linspace(0, 10,101))[0]
 
-        t = ValueTracker(0) 
-        chart = BarChart(values=[np.random.rand()*10 for _ in range(100)],y_range=[0,1,0.1])
+        t = ValueTracker(0)
+        chart = BarChart(values=np.zeros((100)), y_range=[0,10,1])
+        number_line = NumberLine(x_range=[0,10,1],include_numbers=True).put_start_and_end_on(chart.c2p(0,0),chart.c2p(100,0))
+        self.add(number_line)
         #chart.get_axes()[0] = Axes(x_range=[-10,10,101]).get_x_axis()
-        self.add(Dot(chart.c2p(10,0)))
         equals_tex = Tex("M = ")
-        matrix = ChangingMatrix(matricies,t).next_to(equals_tex)
+        matrix = ChangingMatrix(matricies,t).next_to(equals_tex).update()
         sqrd = MathTex("Tr(M^2) =")
-        sum_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd)
-        ul = VGroup(VGroup(equals_tex,matrix),VGroup(sqrd,sum_tex)).arrange(DOWN).move_to(UR)
+        tr_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd).update()
+        n_tex = Tex("N: ")
+        count_tex = Integer().add_updater(lambda d: d.set_value(int(t.get_value()))).next_to(n_tex)
+        ul = VGroup(n_tex,count_tex).move_to(UL+UL+LEFT+LEFT)
+        ur = VGroup(VGroup(equals_tex,matrix),VGroup(sqrd,tr_tex)).arrange(DOWN).move_to(UR+UR+RIGHT+RIGHT)
         
+        self.add(chart,ul,ur)
+        self.wait(1)
+        self.play(Create(SurroundingRectangle(tr_tex)))
+        
+        # value = 1
+        # bar_h = abs(chart.c2p(0, value)[1] - chart.c2p(0, 0)[1])
+        # bar_w = chart.c2p(chart.bar_width, 0)[0] - chart.c2p(0, 0)[0]
+        # bar = Rectangle(
+        #     height=bar_h,
+        #     width=bar_w,
+        #     stroke_width=chart.bar_stroke_width,
+        #     fill_opacity=chart.bar_fill_opacity,
+        # )
+        # pos = UP if (value >= 0) else DOWN
+        # bar.next_to(chart.c2p(np.where(histograms[0]==1)[0][0] + 0.50, 0), pos, buff=0)
+        # bar = chart.bars[np.where(histograms[0]==1)[0][0]].copy()
+        # bar.height += abs(chart.c2p(0, 1)[1] - chart.c2p(0, 0)[1])
+        
+        # self.play(Transform(SurroundingRectangle(tr_tex),bar))
         chart.add_updater(lambda c: c.change_bar_values(histograms[int(t.get_value())]))
+        chart.update()
+        print(dets[int(t.get_value())])
+        self.wait(1)
+
+        self.play(t.animate(rate_func=rush_into).set_value(50),run_time=5)
         
-        self.add(chart,ul)
-        self.play(t.animate(rate_func=smooth).set_value(niter-1),run_time=2)
+        c2 = BarChart(values=np.zeros((100)), y_range=[0,100,10])
+        c2.add_updater(lambda c: c.change_bar_values(histograms[int(t.get_value())]))
+        self.play(Transform(chart,c2))
+        self.remove(chart)
+        self.add(c2)
+        
+        
+        self.play(t.animate(rate_func=smooth).set_value(niter-1),run_time=5)
+        
         self.wait(1)
 
 
@@ -71,7 +118,6 @@ class ShowList(MovingCameraScene):
         self.play(self.camera.frame.animate.scale(0.5).move_to(sqrd).shift(RIGHT),FadeOut(texs,ref,brace_func), run_time=1)
         self.play(Create(sum_tex))
         self.wait(1)
-        
         
         #self.play(Create(texs),run_time=3)
         #self.wait()
@@ -124,7 +170,7 @@ class Vectors(ThreeDScene):
         self.add_fixed_in_frame_mobjects(ul1)
         self.add(axes,vector1,vector2,v1_label,v2_label,area,area_val)
         self.move_camera(phi=45 * DEGREES,theta=-75 * DEGREES)
-        #self.begin_ambient_camera_rotation(rate=0.5)
+        self.begin_ambient_camera_rotation(rate=0.5)
 
         # apply matrix transformation and leave copy
         vec1 = np.matmul(matrix,vec1) 
