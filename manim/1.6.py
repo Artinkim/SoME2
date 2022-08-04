@@ -1,29 +1,80 @@
 from manim import *
 import numpy as np
 
-# class ChangingMatrix(MobjectMatrix):
-#         def __init__(self, matrix, curr):
-#             self.size = [len(matrix),len(matrix[0])]
-#             self.nums = [[DecimalNumber() for _ in range(self.size[1])] for __ in range(self.size[0])]
-            
-#             for x in range(self.size[0]):
-#                 for y in range(self.size[1]):
-#                     self.nums[x][y].set_value(matrix[x][y])
-#                     curr.add_fixed_in_frame_mobjects(self.nums[x][y])
-                    
+class ChangingMatrix(MobjectMatrix):
+    
+        def __init__(self, matrix, vt):
+            self.size = [len(matrix[0]),len(matrix[0][0])]
+            self.nums = [[DecimalNumber(matrix[0][x][y]) for x in range(self.size[1])] for y in range(self.size[0])]       
 
-#             # self.add_updater(lambda m: vt*0)
-#             super().__init__(self.nums, h_buff=2, element_alignment_corner=DR)
+            # for x in range(self.size[0]):
+            #     for y in range(self.size[1]):
+            #         self.nums[x][y].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][x][y]))
 
-#         def animations(self,matrix):
-#             animations = []
-#             for x in range(self.size[0]):
-#                 for y in range(self.size[1]):
-#                     self.nums[x][y].clear_updaters()
-#                     vt = ValueTracker(self.nums[x][y].get_value())
-#                     self.nums[x][y].add_updater(lambda d: d.set_value(vt.get_value()))
-#                     animations.append(vt.animate.set_value(matrix[x][y]))
-#             return animations
+            self.nums[0][0].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][0][0]))
+            self.nums[0][1].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][0][1]))
+            self.nums[1][0].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][1][0]))
+            self.nums[1][1].add_updater(lambda d: d.set_value(matrix[int(vt.get_value())][1][1]))
+
+            super().__init__(self.nums, h_buff=2)
+
+        def get(self,v,x,y):
+                return self.matrix[v][x][y]
+        
+
+class ShowEnsemble(Scene):
+    def construct(self):
+        N = 2 # size of matrix   
+        niter = 500 # number of samples
+        dets = np.zeros((niter))
+        histograms = np.zeros((niter,100))
+        matricies = np.zeros((niter,N,N))
+        for i in range(niter):
+            matricies[i] = np.random.randn(N,N)
+            dets[i] = np.linalg.det(matricies[i]*matricies[i])
+            histograms[i] = np.histogram(dets[:i+1],bins=np.linspace(-10, 10,101),density=True)[0]
+
+        t = ValueTracker(0) 
+        chart = BarChart(values=[np.random.rand()*10 for _ in range(100)],y_range=[0,1,0.1])
+        #chart.get_axes()[0] = Axes(x_range=[-10,10,101]).get_x_axis()
+        self.add(Dot(chart.c2p(10,0)))
+        equals_tex = Tex("M = ")
+        matrix = ChangingMatrix(matricies,t).next_to(equals_tex)
+        sqrd = MathTex("Tr(M^2) =")
+        sum_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd)
+        ul = VGroup(VGroup(equals_tex,matrix),VGroup(sqrd,sum_tex)).arrange(DOWN).move_to(UR)
+        
+        chart.add_updater(lambda c: c.change_bar_values(histograms[int(t.get_value())]))
+        
+        self.add(chart,ul)
+        self.play(t.animate(rate_func=smooth).set_value(niter-1),run_time=2)
+        self.wait(1)
+
+
+class ShowList(MovingCameraScene):
+    def construct(self):
+        strings = ["det(M)", "Tr(M)", "Tr(M^2)","...","Tr(M^k)", "\\text{eigenvectors} = v : Mv = Lv \\text{for some} L"]
+        texs = VGroup(*[MathTex(str(i+1)+"\\text{. }"+s) for i,s in enumerate(strings)]).arrange(DOWN,aligned_edge=LEFT,buff=0.5).to_edge(UL)
+       
+        sqrd = MathTex("Tr(M^2)").move_to(texs[2],RIGHT)
+        sum_tex = MathTex("= \sum \lambda_i^2").next_to(sqrd)
+        
+        brace = Tex("\left\}").scale(7)
+        func = MathTex("f(\{\lambda_i\})")
+        brace_func = VGroup(brace,func).arrange(RIGHT).next_to(texs[2])
+        
+        self.play(Create(texs[:-1]),run_time=2)
+        self.play(Create(brace_func),run_time=1)
+        ref = func.copy()
+        self.play(Transform(ref,texs[-1]),run_time=1)
+        self.add(sqrd)
+        self.play(self.camera.frame.animate.scale(0.5).move_to(sqrd).shift(RIGHT),FadeOut(texs,ref,brace_func), run_time=1)
+        self.play(Create(sum_tex))
+        self.wait(1)
+        
+        
+        #self.play(Create(texs),run_time=3)
+        #self.wait()
 
 class Vectors(ThreeDScene):
     # def mfv(self, vec1,vec2.vec3): #matrixfromvectors
@@ -44,6 +95,7 @@ class Vectors(ThreeDScene):
         a = PI/1.25
         axis = X_AXIS+Z_AXIS
         rot_matrix = rotation_matrix(a, axis)
+        
         rmr = np.matmul(rot_matrix,np.matmul(matrix,np.linalg.inv(rot_matrix))).round(2)
         
         vector1 = Vector(vec1, color=GREEN)
