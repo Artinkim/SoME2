@@ -1,28 +1,29 @@
 from manim import *
 import numpy as np
+from utils import ChangingMatrix
 
-class Functor:
-    x: int
-    y: int
-    matrix: np.array
-    vt: ValueTracker
+# class Functor:
+#     x: int
+#     y: int
+#     matrix: np.array
+#     vt: ValueTracker
     
-    def __init__(self, x, y, matrix, vt):
-        self.x, self.y, self.matrix, self.vt = x, y, matrix, vt
+#     def __init__(self, x, y, matrix, vt):
+#         self.x, self.y, self.matrix, self.vt = x, y, matrix, vt
     
-    def __call__(self, d):
-        d.set_value(self.matrix[int(self.vt.get_value())][self.x][self.y])
+#     def __call__(self, d):
+#         d.set_value(self.matrix[int(self.vt.get_value())][self.x][self.y])
 
-class ChangingMatrix(MobjectMatrix):
-    def __init__(self, matrix, vt):
-        self.size = [len(matrix[0]),len(matrix[0][0])]
-        self.nums = [[DecimalNumber() for x in range(self.size[1])] for y in range(self.size[0])]      
+# class ChangingMatrix(MobjectMatrix):
+#     def __init__(self, matrix, vt):
+#         self.size = [len(matrix[0]),len(matrix[0][0])]
+#         self.nums = [[DecimalNumber() for x in range(self.size[1])] for y in range(self.size[0])]      
          
-        for x in range(self.size[0]):
-            for y in range(self.size[1]):
-                self.nums[x][y].add_updater(Functor(x, y, matrix, vt))
+#         for x in range(self.size[0]):
+#             for y in range(self.size[1]):
+#                 self.nums[x][y].add_updater(Functor(x, y, matrix, vt))
 
-        super().__init__(self.nums, h_buff=2)
+#         super().__init__(self.nums, h_buff=2)
         
 # def stretch(mob, factor):
 #         target = mob.copy()
@@ -52,7 +53,7 @@ class ShowEnsemble(MovingCameraScene):
         self.add(number_line)
         #chart.get_axes()[0] = Axes(x_range=[-10,10,101]).get_x_axis()
         equals_tex = Tex("M = ")
-        matrix = ChangingMatrix(matricies,t).next_to(equals_tex).update()
+        matrix = utils.ChangingMatrix(matricies,t).next_to(equals_tex)
         sqrd = MathTex("Tr(M^2) =")
         tr_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd).update()
         n_tex = Tex("N: ")

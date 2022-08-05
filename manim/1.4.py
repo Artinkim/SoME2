@@ -1,7 +1,4 @@
-from random import Random
 from manim import *
-import random
-import math
 import numpy as np
 
 class ChangingMatrix(MobjectMatrix):
