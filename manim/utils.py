@@ -16,7 +16,7 @@ class Functor:
 class ChangingMatrix(MobjectMatrix):
     def __init__(self, matrix, vt):
         self.size = [len(matrix[0]),len(matrix[0][0])]
-        self.nums = [[DecimalNumber().align_on_border(direction=RIGHT) for x in range(self.size[1])] for y in range(self.size[0])]      
+        self.nums = [[DecimalNumber() for x in range(self.size[1])] for y in range(self.size[0])]      
          
         for x in range(self.size[0]):
             for y in range(self.size[1]):
