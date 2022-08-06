@@ -21,15 +21,16 @@ class RandomMatrix(Scene):
     totalChanges = 10
 
     def construct(self):
-
+        np.random.seed(1)
         vt = ValueTracker(0)
-
-        size = (3, 5)
+        size = (2, 2)
         bounds = (1, 10)
         m = []
-        m.append(MobjectMatrix([[DecimalNumber(np.round(bounds[0]+(bounds[1]-bounds[0])*np.random.random(), decimals=2)) for y in range(size[1])] for x in range(size[0])], h_buff = 1.6))
+        m.append(MobjectMatrix([[DecimalNumber(np.round(np.random.uniform(*bounds), decimals=2)) for y in range(size[1])] for x in range(size[0])], h_buff = 1.6))
+        m.append(MobjectMatrix([[MathTex("Gaussian(\mu,\sigma)") for y in range(size[1])] for x in range(size[0])], h_buff = 3.5))
+        m.append(MobjectMatrix([[MathTex("Uniform (a,b)") for y in range(size[1])] for x in range(size[0])], h_buff = 3.5))
         signs = [" + ", " - "]
-        m.append(MobjectMatrix([[MathTex(str(int(m[-1][0][size[1]*x+y].get_value()))+np.random.choice(signs)+str(np.random.randint(low=bounds[0], high=bounds[1]))+"i") for y in range(size[1])] for x in range(size[0])], h_buff = 2.6))
+        m.append(MobjectMatrix([[MathTex(str(int(m[0][0][size[1]*x+y].get_value()))+np.random.choice(signs)+str(np.random.randint(low=bounds[0], high=bounds[1]))+"i") for y in range(size[1])] for x in range(size[0])], h_buff = 2.6))
         m.append(MobjectMatrix([[MathTex(m[-1][0][size[1]*x+y].tex_string+np.random.choice(signs)+str(np.random.randint(low=bounds[0], high=bounds[1]))+"j"+np.random.choice(signs)+str(np.random.randint(low=bounds[0], high=bounds[1]))+"k") for y in range(size[1])] for x in range(size[0])], h_buff = 4.6))
         m.append(MobjectMatrix([[MathTex(m[-1][0][size[1]*x+y].tex_string+np.random.choice(signs)+"...") for y in range(size[1])] for x in range(size[0])], h_buff = 5.4))
         m.append(MobjectMatrix([
@@ -42,27 +43,52 @@ class RandomMatrix(Scene):
             [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2N}")],
             [MathTex(), MathTex(), MathTex("..."), MathTex()],
             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NN}")]], h_buff = 1.6))
-
+        
         size = (5, 5)
         bounds = (-10, 10)
-        m.append(MobjectMatrix([[DecimalNumber(np.round(bounds[0]+(bounds[1]-bounds[0])*np.random.random(), decimals=2)) for y in range(size[1])] for x in range(size[0])], h_buff = 1.6))
+        m.append(MobjectMatrix([[DecimalNumber(np.round(np.random.uniform(*bounds), decimals=2)) for y in range(size[1])] for x in range(size[0])], h_buff = 1.6))
         m.append(ChangingMatrix(size=size, bounds=bounds, precision=2, vt=vt))
         
         for x in m:
             x.scale(0.5)
         a = m[0]
         self.add(a)
-        self.play(Transform(a, m[1]))
-        self.play(Transform(a, m[2]))
-        self.play(Transform(a, m[3]))
+        self.wait(1)
+
+        axes1 = Axes(x_range=[-5,6,1], y_range=[0,1.1, 0.2]).scale(0.5).add_coordinates().scale(0.5).move_to(UL*2+LEFT*2)
+        axes1.add(Tex("0").scale(0.4).next_to(axes1.x_axis.n2p(0), DOWN*0.5))
+        guas = axes1.plot(lambda x: np.exp(-(x/3)**2),color=BLUE)
+        guas_area = axes1.get_area(guas)
+        axes2 = axes1.copy().next_to(axes1)
+        uniform = axes2.plot(lambda x: 1 if x>-3 and x<3 else 0, discontinuities=[-3,3], color=GREEN)
+        uniform_area = axes2.get_area(uniform)
+
+        self.play(Transform(a, m[1]),Create(axes1),Create(guas),run_time=1)
+        self.play(FadeIn(guas_area))
+        self.wait(1)
+        self.play(Transform(a, m[2]),ReplacementTransform(axes1,axes2,rate_function=lingering),Create(uniform,rate_func=rush_into),run_time=1)
+        self.play(FadeIn(uniform_area))
+        self.wait(1)
+        
+        element_types = VGroup(
+            MathTex("a"),
+            MathTex("a + bi"),
+            MathTex("{\displaystyle a+b\ \mathbf {i} +c\ \mathbf {j} +d\ \mathbf {k} }"),
+            MathTex("{\displaystyle a+b\ \mathbf {i} +c\ \mathbf {j} +d\ \mathbf {k} }","...")
+        ).arrange(DOWN).scale(0.75).next_to(axes2)
+    
+        self.play(Transform(a, m[0]), FadeOut(axes2), FadeIn(element_types[0]))
+        self.play(Transform(a, m[3]), FadeIn(element_types[1]))
+        self.play(Transform(a, m[4]), FadeIn(element_types[2]))
+        self.play(Transform(a, m[5]), FadeIn(element_types[3]))
 
         self.wait(1)
-        self.play(Transform(a, m[4]))
+        self.play(Transform(a, m[6]))
         b = Brace(a)
         b1tex, b2tex = b.get_tex("N\\text{x}P"), b.get_tex("N\\text{x}N")
         self.add(b, b1tex)
         self.wait(1)
-        self.play(Transform(a, m[5]), Transform(b1tex, b2tex))
+        self.play(Transform(a, m[7]), Transform(b1tex, b2tex))
         self.wait(1)
         self.remove(b, b1tex)
         self.play(Transform(a, m[-2]))
