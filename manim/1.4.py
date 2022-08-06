@@ -1,5 +1,6 @@
 from manim import *
 import numpy as np
+import string
 
 class RadomMatrix(MobjectMatrix):
     
@@ -155,16 +156,23 @@ class RandomMatrix(Scene):
         # vals = np.round(np.random.uniform(*bounds,size=size), decimals=2)
         # matrix_decimals = [[DecimalNumber(vals[y,x]) for y in range(size[1])] for x in range(size[0])] #.scale(0.5).arrange(RIGHT).next_to(a,DOWN)
         #d = DecimalMatrix(np.round(np.random.uniform(*bounds,size=size), decimals=2), h_buff = 1.6).scale(0.5)
+        
+        letter_matrix = Matrix(np.reshape(np.array(list(string.ascii_lowercase)[:-1]),(5,5))).scale(0.5)
+        a = m[7]
+        self.play(Transform(a, letter_matrix))
         entries = a.copy().get_entries()
         left_brace, right_brace = MathTex("["), MathTex("]")
         decimal_list = VGroup(*[left_brace,*entries[:3], MathTex("..."), *entries[-2:],right_brace]).arrange(RIGHT).next_to(a,DOWN)
         self.play(TransformMatchingShapes(a.copy(),decimal_list))
-        [self.play(ShowPassingFlash(SurroundingRectangle(e1),time_width=1),ShowPassingFlash(SurroundingRectangle(e2),time_width=1),run_time=0.1) for e1,e2 in zip(a.get_entries(),decimal_list.submobjects[1:4])]
-        surroundin_rect = SurroundingRectangle(decimal_list.submobjects[4])
-        self.add(surroundin_rect)
-        [self.play(ShowPassingFlash(SurroundingRectangle(e),time_width=1),run_time=0.1) for e in a.get_entries()[3:23]]
-        self.remove(surroundin_rect)
-        [self.play(ShowPassingFlash(SurroundingRectangle(e1),time_width=1),ShowPassingFlash(SurroundingRectangle(e2),time_width=1),run_time=0.1) for e1,e2 in zip(a.get_entries()[23:],decimal_list.submobjects[5:7])]
+        [self.play(ShowPassingFlash(SurroundingRectangle(e1),time_width=1),ShowPassingFlash(SurroundingRectangle(e2),time_width=1),run_time=0.5) for e1,e2 in zip(a.get_entries(),decimal_list.submobjects[1:4])]
+        surrounding_rect = SurroundingRectangle(decimal_list.submobjects[4])
+        independent_tex1 = MathTex("P(M)=P(a)P(b)P(c)...P(x)P(y)").scale(0.5).next_to(a,RIGHT)
+        independent_tex2 = MathTex("\prod_{ij=1}^{\infty} a_{i}").scale(0.5).next_to(a,DOWN)
+        self.add(surrounding_rect,independent_tex1)
+        self.add()
+        [self.play(ShowPassingFlash(SurroundingRectangle(e),time_width=1),run_time=0.05) for e in a.get_entries()[3:23]]
+        self.remove(surrounding_rect)
+        [self.play(ShowPassingFlash(SurroundingRectangle(e1),time_width=1),ShowPassingFlash(SurroundingRectangle(e2),time_width=1),run_time=0.5) for e1,e2 in zip(a.get_entries()[23:],decimal_list.submobjects[5:7])]
         self.wait(1)
         # entries = decimal_list.copy().submobjects
         # padded_list = [*entries[1:4],*[entries[3]]*(len(a.get_entries())-7),*entries[-3:-1]]
