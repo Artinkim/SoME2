@@ -277,7 +277,7 @@ class RandomMatrix(Scene):
         self.wait(1)
 
         # change to quantum matrix with states
-        H_def = VGroup(MathTex("H_{ij}"),Tex(" ~ "),VGroup(Tex("Encodes probablility to"),Tex("transition from state"),Tex("i $\\leftarrow$ j in a small time j}")).arrange(DOWN)).arrange(RIGHT).move_to(x_list).shift(LEFT*2)
+        H_def = VGroup(MathTex("H_{ij}"),Tex("\\textasciitilde"),VGroup(Tex("Encodes probablility to"),Tex("transition from state"),Tex("i $\\leftarrow$ j in a small time j}")).arrange(DOWN)).arrange(RIGHT).move_to(x_list).shift(LEFT*2)
         ham_matrix = MobjectMatrix([
             [MathTex("(1 -> 1"), MathTex("(1 -> 2)"), MathTex("(1 -> 3)"), MathTex("...   "), MathTex("(1 -> N)")],
             [MathTex("(2 -> 1)"), MathTex("(2 -> 2)"),MathTex("(2 -> 3)"), MathTex("...  "), MathTex("(2 -> N)")],
@@ -293,9 +293,9 @@ class RandomMatrix(Scene):
         equivalent_Complex = MathTex("H_{ij}"," = ","H_{ij}^{*}").move_to(equivalent2)
         array1 = np.random.uniform(*bounds,size=size)
         array2 = np.random.uniform(*bounds,size=size)
-        array1 = np.tril(array1.T,-1) + np.triu(array1, 1)
+        array1 = np.tril(array1.T) + np.triu(array1, 1)
         array2 = np.tril(array2.T,-1) + np.triu(array2*-1, 1)
-        symetric_conj = [[str(int(array1[x][y]))+("+"*(array2[x][y]>=0)+str(int(array2[x][y]))+"i")*(x!=y) for y in range(size[1])] for x in range(size[0])]
+        symetric_conj = [[str(int(array1[x][y]))+("+"*(int(array2[x][y])>=0)+str(int(array2[x][y]))+"i")*(x!=y) for y in range(size[1])] for x in range(size[0])]
         complex_symetric_matrix = Matrix(symetric_conj, h_buff = 2.6).scale(0.5)
         self.play(ReplacementTransform(faded_ham_matrix,complex_symetric_matrix),ReplacementTransform(equivalent2,equivalent_Complex))
         self.wait(1)
