@@ -23,7 +23,7 @@ def fade_lower_triangle(matrix):
     for i in range(n):
         for j in range(n):
             if i>j:
-                entries[i][j].set_opacity(0.5)
+                entries[i][j].set_opacity(0.25)
     return matrix
 
 class RandomMatrix(Scene):
@@ -46,12 +46,12 @@ class RandomMatrix(Scene):
         m.append(MobjectMatrix([
             [MathTex("M_{11}"), MathTex("M_{12}"), MathTex("..."), MathTex("M_{1P}")],
             [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2P}")],
-            [MathTex(), MathTex(), MathTex("..."), MathTex()],
+            [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NP}")]], h_buff = 1.6))
         m.append(MobjectMatrix([
             [MathTex("M_{11}"), MathTex("M_{12}"), MathTex("..."), MathTex("M_{1N}")],
             [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2N}")],
-            [MathTex(), MathTex(), MathTex("..."), MathTex()],
+            [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NN}")]], h_buff = 1.6))
         size = (5, 5)
         bounds = (-10, 10)
@@ -75,12 +75,12 @@ class RandomMatrix(Scene):
         uniform_area = axes2.get_area(uniform)
 
         # # play chaning the matrix and showing distributions
-        # self.play(Transform(a, m[1]),Create(axes1),Create(guas),run_time=1)
-        # self.play(FadeIn(guas_area))
-        # self.wait(1)
-        # self.play(Transform(a, m[2]),Transform(axes1,axes2,rate_function=lingering),Create(uniform,rate_func=rush_into),run_time=1)
-        # self.play(FadeIn(uniform_area))
-        # self.wait(1)
+        self.play(Transform(a, m[1]),Create(axes1),Create(guas),run_time=1)
+        self.play(FadeIn(guas_area))
+        self.wait(1)
+        self.play(Transform(a, m[2]),Transform(axes1,axes2,rate_function=lingering),Create(uniform,rate_func=rush_into),run_time=1)
+        self.play(FadeIn(uniform_area))
+        self.wait(1)
         
         # # create list of element types matrix can hold
         element_types = VGroup(
@@ -91,55 +91,55 @@ class RandomMatrix(Scene):
         ).arrange(DOWN, center=False, aligned_edge=LEFT).scale(0.75).next_to(axes1)
 
         # # play changing the matrix and showing element types
-        # self.play(Transform(a, m[0]), FadeOut(axes1), FadeIn(element_types[0]))
-        # self.wait(1)
-        # self.play(Transform(a, m[3]), FadeIn(element_types[1]))
-        # self.play(Transform(a, m[4]), FadeIn(element_types[2]))
-        # self.play(Transform(a, m[5]), FadeIn(element_types[3]))
-        # self.wait(1)
+        self.play(Transform(a, m[0]), FadeOut(axes1), FadeIn(element_types[0]))
+        self.wait(1)
+        self.play(Transform(a, m[3]), FadeIn(element_types[1]))
+        self.play(Transform(a, m[4]), FadeIn(element_types[2]))
+        self.play(Transform(a, m[5]), FadeIn(element_types[3]))
+        self.wait(1)
 
         # # shows sizes of matrices 
-        # b = Brace(m[6])
-        # b1tex, b2tex = b.get_tex("N\\text{x}P"), b.get_tex("N\\text{x}N") 
-        # self.play(Transform(a, m[6]),FadeIn(b,b1tex))
-        # self.wait(1)
-        # self.play(Transform(a, m[7]), Transform(b1tex, b2tex))
-        # self.wait(1)
+        b = Brace(m[6])
+        b1tex, b2tex = b.get_tex("N\\text{x}P"), b.get_tex("N\\text{x}N") 
+        self.play(Transform(a, m[6]),FadeIn(b,b1tex))
+        self.wait(1)
+        self.play(Transform(a, m[7]), Transform(b1tex, b2tex))
+        self.wait(1)
         
         # # show specific case of matrix 5x5 (-10,10)
         axes3 = Axes(x_range=[-12,13,2], y_range=[0,1.1, 0.2]).scale(0.5).add_coordinates().scale(0.5).move_to(UL*2+LEFT)
         axes3.add(Tex("0").scale(0.4).next_to(axes3.x_axis.n2p(0), DOWN*0.5))
-        # uniformN = axes3.plot(lambda x: 1 if x>-10 and x<10 else 0, discontinuities=[-10,10], color=GREEN)
-        # uniform_areaN = axes3.get_area(uniformN)
+        uniformN = axes3.plot(lambda x: 1 if x>-10 and x<10 else 0, discontinuities=[-10,10], color=GREEN)
+        uniform_areaN = axes3.get_area(uniformN)
         integer_tex = element_types.submobjects[0]
         integer_texN = integer_tex.copy().next_to(axes3).shift(RIGHT)
-        # element_types.remove(integer_tex)
-        # self.play(
-        #     Transform(a, m[8]),
-        #     FadeOut(guas,guas_area,b,b1tex),
-        #     Transform(uniform,uniformN),
-        #     Transform(uniform_area,uniform_areaN),
-        #     FadeIn(axes3),
-        #     FadeOut(*element_types.submobjects),
-        #     Transform(integer_tex,integer_texN),
-        # )
+        element_types.remove(integer_tex)
+        self.play(
+            Transform(a, m[8]),
+            FadeOut(guas,guas_area,b,b1tex),
+            ReplacementTransform(uniform,uniformN),
+            ReplacementTransform(uniform_area,uniform_areaN),
+            FadeIn(axes3),
+            FadeOut(*element_types.submobjects),
+            ReplacementTransform(integer_tex,integer_texN),
+        )
         integer_arrow = CurvedArrow(integer_texN.get_center(),axes3.c2p(1.8,0.8),color=YELLOW)
-        # self.play(Create(integer_arrow))
-        # self.play(Create(MathTex("M_{ij} = ").scale(0.5).next_to(integer_texN,LEFT)))
-        # self.wait(1)
+        entry_equals_tex = MathTex("M_{ij} = ").scale(0.5).next_to(integer_texN,LEFT)
+        self.play(Create(integer_arrow))
+        self.play(Create(entry_equals_tex))
+        self.wait(1)
 
         # # cycles through random matricies, moving arrow along distribution
-        # self.remove(a)
-        # a = m[9].copy()
-        # self.add(a)
-        curr_arrow = integer_arrow.copy()
-        # # integer_arrow.add_updater(lambda m: m.position_tip(vt.get_value()*0+axes3.c2p(np.random.uniform(-10,10),np.random.uniform(-10,10))))
-        # # self.play(vt.animate.set_value(1), run_time=1)
+        self.remove(a)
+        a = m[9].copy()
+        self.add(a)
+        integer_arrow_copy = integer_arrow.copy()
         left_arrow = CurvedArrow(integer_texN.get_center(),axes3.c2p(-10,0.8),color=YELLOW)
         right_arrow = CurvedArrow(integer_texN.get_center(),axes3.c2p(10,0.8),color=YELLOW)
-        # self.play(vt.animate.set_value(0.3), Transform(curr_arrow,left_arrow), run_time=2)
-        # self.play(vt.animate.set_value(0.6), Transform(curr_arrow,right_arrow), run_time=2)
-        # self.play(vt.animate.set_value(1), Transform(curr_arrow,integer_arrow), run_time=2)
+        self.play(vt.animate.set_value(0.3), ReplacementTransform(integer_arrow,left_arrow), run_time=2)
+        self.play(vt.animate.set_value(0.6), ReplacementTransform(left_arrow,right_arrow), run_time=2)
+        self.play(vt.animate.set_value(1), ReplacementTransform(right_arrow,integer_arrow_copy), run_time=2)
+        self.play(FadeOut(integer_arrow_copy))
 
         # show creation of 3 matricies then puts into row
         self.remove(a) 
@@ -177,31 +177,28 @@ class RandomMatrix(Scene):
         #cycle through entries and show that they are drawn independently from the distribution 
         independent_tex1 = MathTex("p(M)","=","p(M_{11})p(M_{12})...p(M_{NN})").scale(0.5).next_to(a,RIGHT)
         independent_tex2 = MathTex("p(M)","=","\prod_{ij=1}^{N} M_ {ij}").scale(0.5).next_to(a,RIGHT)
-        dependent_tex = MathTex("p(M)","\\neq","\prod_{ij=1}^{N} M_{ij}").set_color_by_tex("\\neq",RED).scale(0.5).next_to(a,RIGHT)
+        dependent_tex = MathTex("p(M)","\\neq","\prod_{ij=1}^{N} M_{ij}").scale(0.5).next_to(a,RIGHT)
         symetric_tex =  MathTex("p(M)","=","\prod_{indep ij} M_{ij} = \prod_{i} M_{ii}\prod_{i>j} M_{ij}").scale(0.5).next_to(a,RIGHT)
-        for i in range(3):
+        prev_arrow = Mobject()
+        for i in range(25):
+            curr_arrow = CurvedArrow(a.get_entries()[i].get_center(),axes3.c2p(a.get_entries()[i].get_value(),0.8),color=YELLOW)
             self.play(
                 ShowPassingFlash(SurroundingRectangle(a.get_entries()[i]),time_width=1),
-                ShowPassingFlash(CurvedArrow(a.get_entries()[i].get_center(),axes3.c2p(a.get_entries()[i].get_value(),0.8),color=YELLOW)), 
-                run_time=0.5)
-        self.play(Write(independent_tex1),run_time=0.5)
-        for i in range(3,23):
-            self.play(
-                ShowPassingFlash(SurroundingRectangle(a.get_entries()[i]),time_width=1),
-                ShowPassingFlash(CurvedArrow(a.get_entries()[i].get_center(),axes3.c2p(a.get_entries()[i].get_value(),0.8),color=YELLOW)), 
-                run_time=0.1) 
-        self.play(TransformMatchingTex(independent_tex1,independent_tex2),run_time=0.5)
-        for i in range(23,25):
-            self.play(
-                ShowPassingFlash(SurroundingRectangle(a.get_entries()[i]),time_width=1),
-                ShowPassingFlash(CurvedArrow(a.get_entries()[i].get_center(),axes3.c2p(a.get_entries()[i].get_value(),0.8),color=YELLOW)),
-                run_time=0.5) 
-
+                FadeOut(prev_arrow),
+                Create(curr_arrow), 
+                run_time = 0.1 if 2<i and i<22 else 0.5)
+            prev_arrow = curr_arrow
+            if i == 2:  
+                self.play(Write(independent_tex1),run_time=0.5)
+            if i == 22:
+                self.play(TransformMatchingTex(independent_tex1,independent_tex2),run_time=0.5)
+        self.play(FadeOut(prev_arrow))
 
         # show physical system is not independent
-        ps = Tex("PYSICAL SYTEM").move_to(LEFT*2)
+        ps = Tex("PYS SYSTM").move_to(LEFT*3)
         self.play(FadeIn(ps),run_time=0.5)
         self.play(TransformMatchingTex(independent_tex2,dependent_tex))
+        self.play(Indicate(dependent_tex.get_part_by_tex("\\neq"), scale_factor=3, color=RED),FadeOut(entry_equals_tex,integer_texN))
         self.wait(1)
         self.play(FadeOut(ps),run_time=0.5)
 
@@ -238,28 +235,33 @@ class RandomMatrix(Scene):
         self.wait(1)
 
         # show vector of random variables and covariance between then in matrix
-        x_list = MathTex("X"," = ","(","x_{1}",",","x_{2}",",","...",",","x_{N}",")").next_to(a,UP).shift(UP)
+        x_list = MathTex("X"," = ","(","x_{1}",",","x_{2}",",","x_{3}",",","...",",","x_{N}",")").next_to(a,UP).shift(UP)
         C_def = MathTex("C_{ij}(X) "," \equiv ","cov(x_i,x_j)").next_to(x_list,DOWN)
-        self.play(Write(x_list))
+        self.play(Write(x_list),FadeOut(axes3,uniform_areaN,uniformN))
         self.wait(1)
         cov_matrix = MobjectMatrix([
             [MathTex("C(x_{1},x_{1})"), MathTex("C(x_{1},x_{2})"), MathTex("C(x_{1},x_{3})"), MathTex("..."), MathTex("C(x_{1},x_{N})")],
             [MathTex("C(x_{2},x_{1})"), MathTex("C(x_{2},x_{2})"),MathTex("C(x_{2},x_{3})"), MathTex("..."), MathTex("C(x_{2},x_{N})")],
-            [MathTex(), MathTex(),MathTex(), MathTex("..."), MathTex()],
+            [MathTex("C(x_{3},x_{1})"), MathTex("C(x_{3},x_{2})"), MathTex("C(x_{3},x_{3})"), MathTex("..."), MathTex("C(x_{3},x_{N})")],
+            [MathTex(), MathTex(),MathTex(), MathTex("\ddots"), MathTex()],
             [MathTex("C(x_{N},x_{1})"), MathTex("C(x_{N},x_{2})"), MathTex("C(x_{N},x_{3})"), MathTex("..."), MathTex("C(x_{N},x_{N})")]
             ], h_buff = 2.5).scale(0.5)
         self.play(Write(C_def),ReplacementTransform(sysmetric_matrix_faded,cov_matrix),symetric_tex.animate.next_to(C_def,RIGHT))
         self.wait(1)
 
-        # show covariance has sysmetric property with CurvedArrows
+        # show covariance has symetric property with CurvedArrows
+        arrow1 = CurvedArrow(x_list.submobjects[3].get_center(),x_list.submobjects[7].get_center(),color=YELLOW)
+        arrow2 = CurvedArrow(x_list.submobjects[7].get_center(),x_list.submobjects[3].get_center(),color=YELLOW)
         self.play(
-            ShowPassingFlash(SurroundingRectangle(sysmetric_matrix_faded.get_entries()[2]),time_width=0.25),
-            ShowPassingFlash(CurvedArrow(x_list.submobjects[3].get_center(),x_list.submobjects[5].get_center(),color=YELLOW)),
+            ShowPassingFlash(SurroundingRectangle(cov_matrix.get_entries()[2]),time_width=0.5),
+            Create(arrow1,rate_func=lingering),
             run_time=2)
+        self.play(FadeOut(arrow1))
         self.play(
-            ShowPassingFlash(SurroundingRectangle(sysmetric_matrix_faded.get_entries()[7]),time_width=0.1),
-            ShowPassingFlash(CurvedArrow(x_list.submobjects[5].get_center(),x_list.submobjects[3].get_center(),color=YELLOW)),
+            ShowPassingFlash(SurroundingRectangle(cov_matrix.get_entries()[10]),time_width=0.5),
+            Create(arrow2,rate_func=lingering),
             run_time=2)
+        self.play(FadeOut(arrow2))
         self.wait(1)
 
         # write equivalency tex 
@@ -269,41 +271,32 @@ class RandomMatrix(Scene):
         self.wait(0.5)
         self.play(ReplacementTransform(equivalent1.copy(),equivalent2))
 
-        # fadeout symetric entry values (lower triangular section)
+        # fadeout covariance entry values (lower triangular section)
         cov_matrix_faded = fade_lower_triangle(cov_matrix.copy())
         self.play(ReplacementTransform(cov_matrix,cov_matrix_faded),FadeOut(equivalent1),equivalent2.animate.move_to(equivalent1))
         self.wait(1)
 
-        # change to hamiltonian matrix
-        H_def = MathTex("H_{ij}(X) "," ~ ","\\text{encodes probablility to}  \\ \\text{transition from state} \\ \\text{i -> j in a small time j}").move_to(x_list,DOWN)
+        # change to quantum matrix with states
+        H_def = VGroup(MathTex("H_{ij}"),Tex(" ~ "),VGroup(Tex("Encodes probablility to"),Tex("transition from state"),Tex("i $\\leftarrow$ j in a small time j}")).arrange(DOWN)).arrange(RIGHT).move_to(x_list).shift(LEFT*2)
         ham_matrix = MobjectMatrix([
-            [MathTex("(1 -> 1"), MathTex("(1 -> 2)"), MathTex("(1 -> 3)"), MathTex("..."), MathTex("(1 -> N)")],
-            [MathTex("(2 -> 1)"), MathTex("(2 -> 2)"),MathTex("(2 -> 3)"), MathTex("..."), MathTex("(2 -> N)")],
-            [MathTex(), MathTex(), MathTex(), MathTex("..."), MathTex()],
-            [MathTex("(N -> 1)"), MathTex("(N -> 2)"), MathTex("(N -> 3)"), MathTex("..."), MathTex("(N -> N)")]
+            [MathTex("(1 -> 1"), MathTex("(1 -> 2)"), MathTex("(1 -> 3)"), MathTex("...   "), MathTex("(1 -> N)")],
+            [MathTex("(2 -> 1)"), MathTex("(2 -> 2)"),MathTex("(2 -> 3)"), MathTex("...  "), MathTex("(2 -> N)")],
+            [MathTex("(3 -> 1)"), MathTex("(3 -> 2)"), MathTex("(3 -> 3)"), MathTex("...  "), MathTex("(3 -> N)")],
+            [MathTex(), MathTex(), MathTex(), MathTex("\ddots  "), MathTex()],
+            [MathTex("(N -> 1)"), MathTex("(N -> 2)"), MathTex("(N -> 3)"), MathTex("...  "), MathTex("(N -> N)")]
             ], h_buff = 2.5).scale(0.5)
-        self.play(FadeOut(x_list),ReplacementTransform(C_def,H_def),Write(H_def),ReplacementTransform(cov_matrix_faded,ham_matrix))
+        faded_ham_matrix = fade_lower_triangle(ham_matrix.copy())
+        self.play(FadeOut(x_list),ReplacementTransform(C_def,H_def),Write(H_def),ReplacementTransform(cov_matrix_faded,faded_ham_matrix))
+        self.wait(1)
         
-        equivalent_Complex = MathTex("H_{ij}"," = ","H_{ij}^{*}").move_to(a,UP)
-        self.play(ReplacementTransform(equivalent2,equivalent_Complex))
-
-
-
-        # self.play(Transform(curr_arrow,left_arrow), run_time=1)
-        # self.play(Transform(curr_arrow,right_arrow), Write(independent_tex1), run_time=1)
-        # self.play(Transform(curr_arrow,integer_arrow),TransformMatchingTex(independent_tex1,independent_tex2), run_time=1)
-        # self.wait(1)
-        # self.play(TransformMatchingTex(independent_tex2,dependent_tex), Write(dependent_tex2), run_time=1)
-        # self.wait(1)
-        
-        # self.remove(surrounding_rect)
-        # [self.play(ShowPassingFlash(SurroundingRectangle(e1),time_width=1),ShowPassingFlash(SurroundingRectangle(e2),time_width=1),run_time=0.5) for e1,e2 in zip(a.get_entries()[23:],decimal_list.submobjects[5:7])]
-        # self.wait(1)
-        # entries = decimal_list.copy().submobjects
-        # padded_list = [*entries[1:4],*[entries[3]]*(len(a.get_entries())-7),*entries[-3:-1]]
-        # print(len(padded_list),len(entries)) #22, 25
-        # for mat_entry, list_entry in zip(a.get_entries(),padded_list):
-        #self.play(Create(SurroundingRectangle(mat_entry)),Create(SurroundingRectangle(list_entry)),run_time=0.1)
-        #self.wait(1) # ShowPassingFlash(time_width=0.1) or Create
-
+        #generate a 5x5 matrix of symetric complex conjugates
+        equivalent_Complex = MathTex("H_{ij}"," = ","H_{ij}^{*}").move_to(equivalent2)
+        array1 = np.random.uniform(*bounds,size=size)
+        array2 = np.random.uniform(*bounds,size=size)
+        array1 = np.tril(array1.T,-1) + np.triu(array1, 1)
+        array2 = np.tril(array2.T,-1) + np.triu(array2*-1, 1)
+        symetric_conj = [[str(int(array1[x][y]))+("+"*(array2[x][y]>=0)+str(int(array2[x][y]))+"i")*(x!=y) for y in range(size[1])] for x in range(size[0])]
+        complex_symetric_matrix = Matrix(symetric_conj, h_buff = 2.6).scale(0.5)
+        self.play(ReplacementTransform(faded_ham_matrix,complex_symetric_matrix),ReplacementTransform(equivalent2,equivalent_Complex))
+        self.wait(1)
         
