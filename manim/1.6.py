@@ -1,7 +1,30 @@
+from modulefinder import ReplacePackage
 from manim import *
 import numpy as np
 from utils import ChangingMatrix
 
+class Intro(Scene):
+    def construct(self):
+        funtion_tex =  MathTex("\\frac{1}{n}", "\\sum_{i=0}^{n} ","f","(M_{i})")
+        det_tex = MathTex("\\frac{1}{n}", "\\sum_{i=0}^{n} ","det","(M_{i})")
+        trace_tex = MathTex("\\frac{1}{n}", "\\sum_{i=0}^{n} ","Tr","(M","_{i}",")")
+        moved_function_tex1 = MathTex("Tr","(M",")").move_to(funtion_tex)
+        moved_function_tex2 = MathTex("f(M)").move_to(funtion_tex)
+        basis_invariant_tex = Tex("Basis-Invariant Quantities").move_to(UP)
+        equivalency_tex1 = MathTex("f(M)"," = ", "f","(","UM{U}^{-1}",")")
+        equivalency_tex2 = MathTex("f","(M)"," = ","f","(","\\widetilde{M}",")").next_to(equivalency_tex1,DOWN)
+        cob_tex = MathTex("\\widetilde{M} = UM{U}^{-1}").move_to(equivalency_tex1)
+        self.add(funtion_tex)
+        self.play(TransformMatchingTex(funtion_tex,det_tex),run_time=2)
+        self.play(TransformMatchingTex(det_tex,trace_tex),run_time=2)
+        self.play(TransformMatchingTex(trace_tex,moved_function_tex1),run_time=2)
+        self.play(TransformMatchingShapes(moved_function_tex1,moved_function_tex2),run_time=0.5)
+        self.play(Write(basis_invariant_tex),TransformMatchingTex(moved_function_tex2,equivalency_tex1),run_time=2)
+        self.play(AnimationGroup(
+            TransformMatchingTex(equivalency_tex1,equivalency_tex2), 
+            Write(cob_tex),lag_ratio=0.5),run_time=2)
+        self.play(Wiggle(equivalency_tex2.submobjects[0]),Wiggle(equivalency_tex2.submobjects[3]),run_time=2)
+        self.wait(1)
 
 class ShowEnsemble(MovingCameraScene):
     def construct(self):
@@ -107,7 +130,7 @@ class Vectors(ThreeDScene):
         axes = ThreeDAxes()
         vec1, vec2 = [3/2,0,0], [0,2/3,0]
         matrix = np.array([[(np.sqrt(3)/2)*np.cos(np.pi/18),(np.sqrt(2))*np.cos(np.pi/9),0], [(np.sqrt(3)/2)*np.sin(np.pi/18),(np.sqrt(2))*np.sin(np.pi/9),0],[0,0,1]]).round(2)
-        a = PI/1.25
+        a = PI/0.75
         axis = X_AXIS+Z_AXIS
         rot_matrix = rotation_matrix(a, axis)
         
@@ -118,28 +141,15 @@ class Vectors(ThreeDScene):
         v1_label = Tex("v",color=GREEN).add_updater(lambda m: m.move_to(vector1.get_end())).update()
         v2_label = Tex("w",color=RED).add_updater(lambda m: m.move_to(vector2.get_end())).update()
         
-        caption1 = Tex(*[c for c in "(v, w) → (Mv, Mw)"]).set_color_by_tex("v", GREEN).set_color_by_tex("w", RED).set_color_by_tex("M", YELLOW)
-        caption2 = MathTex(*[c for c in "(Rv, Rw)"],"\\rightarrow"," (","R", "M", "{{R}}^{-1}","R", "v", ", ", "R", "M","{{R}}^{-1}","R", "w",")").set_color_by_tex("v", GREEN).set_color_by_tex("w", RED).set_color_by_tex("M", YELLOW).set_color_by_tex("R", PURPLE)
-        matrix_equals_tex1 = Tex("M"," = ").set_color_by_tex("M", YELLOW)
-        matrix_equals_tex2 = MathTex("R", "M", "{{R}}^{-1}", " = ").set_color_by_tex("M", YELLOW).set_color_by_tex("R", PURPLE)
-        matrix_tex1 = VGroup(matrix_equals_tex1,Matrix(matrix).scale(0.75)).arrange(RIGHT)
-        matrix_tex2 = VGroup(matrix_equals_tex2,Matrix(rmr).scale(0.75)).arrange(RIGHT)
-        det_unit_tex1 =  VGroup(Tex("det(","M",") = ").set_color_by_tex("M", YELLOW),DecimalNumber(np.linalg.det(matrix))).arrange(RIGHT)#.add_updater(lambda x: x.set_value(np.linalg.det(matrix)))
-        det_unit_tex2 =  VGroup(MathTex("det(","R", "M", "{{R}}^{-1}",") = ").set_color_by_tex("M", YELLOW).set_color_by_tex("M", YELLOW).set_color_by_tex("R", PURPLE),DecimalNumber(np.linalg.det(matrix))).arrange(RIGHT) 
-        ul1 = VGroup(caption1, matrix_tex1,det_unit_tex1).arrange(DOWN).to_edge(UL)
-        ul2 = VGroup(caption1, matrix_tex2,det_unit_tex2).arrange(DOWN).to_edge(UL)
-        caption2.to_edge(UL)
-        
         area = self.vecs2poly(vector1,vector2).set_z_index(-1)
         area.add_updater(lambda m: m.set_points_as_corners(self.vecs2poly(vector1,vector2).get_vertices()))
         area_val = DecimalNumber()
         area_val.add_updater(lambda x: x.move_to(area.get_center())).update()
         area_val.add_updater(lambda x: x.set_value(self.get_area(vector1,vector2))).update()
         
-        self.add_fixed_in_frame_mobjects(ul1)
-        self.add(axes,vector1,vector2,v1_label,v2_label,area,area_val)
-        self.move_camera(phi=45 * DEGREES,theta=-75 * DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.5)
+        self.add(axes,vector1,vector2,v1_label,v2_label)
+        self.wait(1)
+        self.play(Create(area),Write(area_val))
 
         # apply matrix transformation and leave copy
         vec1 = np.matmul(matrix,vec1) 
@@ -154,6 +164,10 @@ class Vectors(ThreeDScene):
         self.play(vector1.animate.put_start_and_end_on(ORIGIN,vec1),vector2.animate.put_start_and_end_on(ORIGIN,vec2))
         self.wait(1)
         
+        # show 3d perspective
+        self.move_camera(phi=45 * DEGREES,theta=-75 * DEGREES)
+        self.begin_ambient_camera_rotation(rate=0.25)
+        
         # rotate vectors in 3D
         vec1 = np.matmul(rot_matrix,vec1) 
         vec2 = np.matmul(rot_matrix,vec2)
@@ -161,9 +175,6 @@ class Vectors(ThreeDScene):
             Rotate(vector1,angle=a,axis=axis,about_point=ORIGIN),
             Rotate(vector2,angle=a,axis=axis,about_point=ORIGIN)
         )
-        self.remove(matrix_tex1,det_unit_tex1,caption1)
-        self.add_fixed_in_frame_mobjects(matrix_tex2,det_unit_tex2,caption2)
-        #self.play(Transform(matrix_tex1,matrix_tex2),Transform(det_unit_tex1,det_unit_tex2))
         self.wait(1)
 
         # apply matrix transformation
@@ -180,6 +191,68 @@ class Vectors(ThreeDScene):
             Rotate(vector1,angle=a,axis=axis,about_point=ORIGIN),
             Rotate(vector2,angle=a,axis=axis,about_point=ORIGIN)
         )
-        self.remove(matrix_tex2,det_unit_tex2,caption2)
-        self.add_fixed_in_frame_mobjects(matrix_tex1,det_unit_tex1,caption1)
         self.wait(1)
+
+class VectorLabel(Scene):
+    def playWait(self, *args,**kwargs):
+            self.play(*args,**kwargs)
+            self.wait(0.1)
+    
+    def construct(self):
+        
+        vec1, vec2 = [3/2,0,0], [0,2/3,0]
+        matrix = np.array([[(np.sqrt(3)/2)*np.cos(np.pi/18),(np.sqrt(2))*np.cos(np.pi/9),0], [(np.sqrt(3)/2)*np.sin(np.pi/18),(np.sqrt(2))*np.sin(np.pi/9),0],[0,0,1]]).round(2)
+        a = PI/0.75
+        axis = X_AXIS+Z_AXIS
+        rot_matrix = rotation_matrix(a, axis)
+        rmr = np.matmul(rot_matrix,np.matmul(matrix,np.linalg.inv(rot_matrix))).round(2)
+        
+        caption1 = Text("(v, w) ",t2c={"v":GREEN, "w" :RED}).move_to((-4,3,0))
+        caption1C1 = caption1.copy()
+        caption1C2 = caption1.copy()
+        caption2 = Text("(Mv, Mw) ",t2c={"v":GREEN, "w":RED,"M": YELLOW}).move_to((-4,3,0))
+        caption3 = Text("(Rv, Rw) ",t2c={"v":GREEN, "w":RED,"M": YELLOW,"R":PURPLE}).move_to((-4,3,0))
+        caption4 = MathTex("(","\\widetilde{M}","R","v",", ","\\widetilde{M}","R","w",")").move_to((-4,3,0))
+        caption4.set_color_by_tex_to_color_map({"v":GREEN, "w":RED,"M": YELLOW,"R":PURPLE})
+
+        matrix_equals_tex1 = MathTex("M"," = ").next_to(caption1,DOWN,buff=1.5).shift(LEFT)
+        matrix_equals_tex2 = MathTex("\\widetilde{M}", "=","R", "M", "{R}^{T}", " = ").next_to(caption1,DOWN,buff=1.5).shift(LEFT)
+        matrix_equals_tex3 = MathTex("\\widetilde{M}", " = ").next_to(caption1,DOWN,buff=1.5).shift(LEFT)
+        matrix_equals_tex1.set_color_by_tex("M",YELLOW)
+        matrix_equals_tex2.set_color_by_tex_to_color_map({"M": YELLOW,"R":PURPLE})
+        matrix_equals_tex3.set_color_by_tex("M",YELLOW)
+        
+        matrix_tex1 = Matrix(matrix[:2,:2]).next_to(matrix_equals_tex1,RIGHT)
+        matrix_tex2 = Matrix(rmr).next_to(matrix_equals_tex2,RIGHT)
+        matrix_tex3 = Matrix(matrix).next_to(matrix_equals_tex3,RIGHT)
+        matrix_tex3C = matrix_tex3.copy()
+        
+        
+        det_tex1 =  VGroup(
+            Tex("det(","M",") = ").set_color_by_tex("M", YELLOW),
+            DecimalNumber(np.linalg.det(matrix))
+        ).arrange(RIGHT).next_to(matrix_tex1,DOWN)
+        
+        tinv_tex = VGroup(
+            Tex("* For a matrix whos change"), 
+            Tex("of basis is a rotation the"),
+            Tex("transpose is equal to its inverse"), 
+            MathTex("R^{T} = R^{-1}").scale(2)
+        ).arrange(DOWN).move_to(UR*2+RIGHT*2).scale(0.5)
+        
+        
+        self.playWait(Write(caption1),Write(VGroup(matrix_equals_tex1,matrix_tex1)))
+        self.playWait(Write(det_tex1))
+        self.playWait(FadeOut(det_tex1))
+        self.playWait(ReplacementTransform(caption1,caption2))
+        self.playWait(ReplacementTransform(caption2,caption1C1))
+        self.playWait(FadeOut(matrix_tex1),FadeIn(matrix_tex3))
+        self.playWait(ReplacementTransform(caption1C1,caption3))
+        
+        self.playWait(ReplacementTransform(matrix_equals_tex1,matrix_equals_tex2),ReplacementTransform(matrix_tex3,matrix_tex2),Write(tinv_tex))
+        self.playWait(ReplacementTransform(matrix_equals_tex2,matrix_equals_tex3),matrix_tex2.animate.next_to(matrix_equals_tex3,RIGHT))
+        self.playWait(ReplacementTransform(caption3,caption4))
+        
+        self.playWait(ReplacementTransform(matrix_tex2,matrix_tex3C))
+        self.playWait(FadeOut(tinv_tex),ReplacementTransform(caption4,caption1C2))
+        
