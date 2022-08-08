@@ -56,7 +56,7 @@ class EnsembleAverage(Scene):
         np.random.seed(1)
 
         size, bounds = (2, 2), (-10, 10)
-        iterations = 100
+        iterations, scale = 25000, 1000
         matricies = [np.round(bounds[0]+(bounds[1]-bounds[0])*np.random.rand(size[0], size[1]), decimals=2) for _ in range(iterations)]
         matricies[0][1][1] = np.abs(matricies[0][1][1])
         dets = [np.round(np.linalg.det(matricies[i]), decimals=2) for i in range(len(matricies))]
@@ -103,16 +103,16 @@ class EnsembleAverage(Scene):
         totalDets = [0]
         for x in dets:
             totalDets.append(totalDets[-1]+x)
-        averageDet = DecimalNumber().add_updater(lambda a: a.set_value(np.round(totalDets[1+int(t.get_value())]/int(1+t.get_value()), decimals=2))).update()
+        averageDet = DecimalNumber().add_updater(lambda a: a.set_value(np.round(totalDets[1+int(iterations*rate_functions.ease_in_expo(t.get_value()*scale/iterations))]/int(1+iterations*rate_functions.ease_in_expo(t.get_value()*scale/iterations)), decimals=2))).update()
         self.play(g.animate.shift(LEFT*3+UP*3).scale(0.4), FadeIn(VGroup(averageDetTex, averageDet.next_to(averageDetTex, direction=DOWN)).scale(2).move_to(RIGHT*3+UP*2)))
 
         # cg = VGroup()
         # cg.add_updater(lambda g: g.become(VGroup(matrix.copy(), detEq.copy(), det.copy())))
         # self.play(t.animate(rate_func=rate_functions.ease_in_quint).set_value(iterations-1), run_time=5)
 
-        times = [0.4, 0.2, 0.1]
+        times = [0.8, 0.6, 0.4, 0.2, 0.1]
         # print(MobjectMatrix(matricies[0]).scale(0.4))
-        cg = [VGroup(MobjectMatrix(matricies[i], lambda m: DecimalNumber(m)).scale(0.4).move_to(matrix), detEq.copy(), DecimalNumber(dets[i]).scale(0.4).move_to(det)) for i in range(iterations)]
+        cg = [VGroup(MobjectMatrix(matricies[i], lambda m: DecimalNumber(m)).scale(0.4).move_to(matrix), detEq.copy(), DecimalNumber(dets[i]).scale(0.4).move_to(det)) for i in range(iterations//scale)]
 
         startCoords = DOWN*1.5+LEFT*2
         self.play(cg[0].animate.shift(startCoords), run_time=1)
@@ -123,9 +123,10 @@ class EnsembleAverage(Scene):
         t.set_value(t.get_value()+1)
 
         # np.min(0.1, )
-        for i in range(3, iterations-1):
-            self.play(cg[i].animate.shift(startCoords+RIGHT*5), FadeOut(cg[i-1], shift=LEFT*1.5), run_time=times[np.min([2, int(i/5)])])
+        for i in range(3, iterations//scale-1):
+            self.play(cg[i].animate.shift(startCoords+RIGHT*5), FadeOut(cg[i-1], shift=LEFT*1.5), run_time=0.1+0.8*(1-rate_functions.ease_out_expo(i*scale/iterations)))
             t.set_value(t.get_value()+1)
+        t.set_value(t.get_value()-1)
         self.wait(1)
 
         sumTex = MathTex(r" = \frac{1}{n}" + " \sum_{i=0}^{n}det(M_i)").next_to(averageDet.copy().move_to(DOWN*1+LEFT*5).scale(0.5))
