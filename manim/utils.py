@@ -1,6 +1,9 @@
 from manim import *
 from functools import partial
 
+# links:
+# https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf
+
 class Functor:
     x: int
     y: int
