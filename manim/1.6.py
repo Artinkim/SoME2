@@ -26,57 +26,49 @@ class Intro(Scene):
         self.play(Wiggle(equivalency_tex2.submobjects[0]),Wiggle(equivalency_tex2.submobjects[3]),run_time=2)
         self.wait(1)
 
+
 class ShowEnsemble(MovingCameraScene):
+    def playWait(self, *args,**kwargs):
+            self.play(*args,**kwargs)
+            self.wait(1)
+            
     def construct(self):
         N = 2 # size of matrix   
-        niter = 500 # number of samples
+        niter = 5000 # number of samples
         dets = np.zeros((niter))
         histograms = np.zeros((niter,100))
         matricies = np.zeros((niter,N,N))
         for i in range(niter):
             matricies[i] = np.random.randn(N,N)
-            dets[i] = np.trace(matricies[i]*matricies[i])
-            histograms[i] = np.histogram(dets[:i+1],bins=np.linspace(0, 10,101))[0]
-
+            dets[i] = np.trace(np.matmul(matricies[i],matricies[i]))
+            histograms[i] = np.histogram(dets[:i+1],bins=np.linspace(-10, 10,101))[0]
+        
         t = ValueTracker(0)
         chart = BarChart(values=np.zeros((100)), y_range=[0,10,1])
-        number_line = NumberLine(x_range=[0,10,1],include_numbers=True).put_start_and_end_on(chart.c2p(0,0),chart.c2p(100,0))
-        self.add(number_line)
-        #chart.get_axes()[0] = Axes(x_range=[-10,10,101]).get_x_axis()
+        number_line = NumberLine(x_range=[-10,10,1],include_numbers=True).put_start_and_end_on(chart.c2p(0,0),chart.c2p(100,0))
+        
+        
         equals_tex = Tex("M = ")
-        matrix = utils.ChangingMatrix(matricies,t).next_to(equals_tex)
+        matrix = ChangingMatrix(matricies,t).next_to(equals_tex)
         sqrd = MathTex("Tr(M^2) =")
         tr_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd).update()
         n_tex = Tex("N: ")
-        count_tex = Integer().add_updater(lambda d: d.set_value(int(t.get_value()))).next_to(n_tex)
+        count_tex = Integer().add_updater(lambda d: d.set_value(int(t.get_value())+1)).next_to(n_tex)
         ul = VGroup(n_tex,count_tex).move_to(UL+UL+LEFT+LEFT)
-        ur = VGroup(VGroup(equals_tex,matrix),VGroup(sqrd,tr_tex)).arrange(DOWN).move_to(UR+UR+RIGHT+RIGHT)
+        ur = VGroup(VGroup(equals_tex,matrix),VGroup(sqrd,tr_tex)).arrange(DOWN).to_edge(UR)
+        tr_rect = SurroundingRectangle(tr_tex)
         
-        self.add(chart,ul,ur)
+        self.play(Create(equals_tex),Create(matrix),Create(sqrd))
+        self.play(Create(chart),Create(number_line),Create(tr_tex))
+        
         self.wait(1)
-        self.play(Create(SurroundingRectangle(tr_tex)))
-        
-        # value = 1
-        # bar_h = abs(chart.c2p(0, value)[1] - chart.c2p(0, 0)[1])
-        # bar_w = chart.c2p(chart.bar_width, 0)[0] - chart.c2p(0, 0)[0]
-        # bar = Rectangle(
-        #     height=bar_h,
-        #     width=bar_w,
-        #     stroke_width=chart.bar_stroke_width,
-        #     fill_opacity=chart.bar_fill_opacity,
-        # )
-        # pos = UP if (value >= 0) else DOWN
-        # bar.next_to(chart.c2p(np.where(histograms[0]==1)[0][0] + 0.50, 0), pos, buff=0)
-        # bar = chart.bars[np.where(histograms[0]==1)[0][0]].copy()
-        # bar.height += abs(chart.c2p(0, 1)[1] - chart.c2p(0, 0)[1])
-        
-        # self.play(Transform(SurroundingRectangle(tr_tex),bar))
+        self.play(Create(tr_rect))
         chart.add_updater(lambda c: c.change_bar_values(histograms[int(t.get_value())]))
         chart.update()
-        print(dets[int(t.get_value())])
         self.wait(1)
+        self.play(FadeOut(tr_rect),Create(ul))
 
-        self.play(t.animate(rate_func=rush_into).set_value(50),run_time=5)
+        self.play(t.animate(rate_func=rush_into).set_value(50),run_time=1)
         
         c2 = BarChart(values=np.zeros((100)), y_range=[0,100,10])
         c2.add_updater(lambda c: c.change_bar_values(histograms[int(t.get_value())]))
@@ -84,10 +76,34 @@ class ShowEnsemble(MovingCameraScene):
         self.remove(chart)
         self.add(c2)
         
-        
-        self.play(t.animate(rate_func=smooth).set_value(niter-1),run_time=5)
-        
+        self.play(t.animate(rate_func=smooth).set_value(niter-1),run_time=1)
         self.wait(1)
+        
+        index = np.where(np.histogram(np.average(dets),bins=np.linspace(-7,7,101))[0]==1)[0]
+        vtN = ValueTracker(0)
+        c2.add_updater(lambda c: c.change_bar_values([max(0,val-int(vtN.get_value())*(abs(i-index))) for i,val in enumerate(histograms[niter-1])]))
+        self.play(vtN.animate(rate_func=smooth).set_value(150),run_time=1)
+        self.wait(1)
+        
+        axes1 = Axes(x_range=[-5,6,1], y_range=[0,1.1, 0.2]).scale(0.5).add_coordinates().scale(0.5).move_to(UL*2+LEFT*2)
+        axes1.add(Tex("0").scale(0.4).next_to(axes1.x_axis.n2p(0), DOWN*0.5))
+        entry = MathTex("M_{ij}").next_to(axes1, RIGHT).shift(RIGHT+UP)
+        arrow = CurvedArrow(entry.get_center(),axes1.c2p(0.8,0.8), color = YELLOW)
+        entry_equivalence_tex = MathTex("Tr(M^2) = \sum \lambda_i^2").scale(0.75).next_to(entry, DOWN)
+        eiegen_equivalence_tex1 = MathTex("\lambda_{\pm} &= \\frac{M_{11} +M_{22}}{2} \pm \\frac{1}{2}\sqrt{(M_{11}-M_{22})^2 + 4M_{12}^2}").scale(0.5).next_to(axes1, DOWN).shift(RIGHT*2)
+        eiegen_equivalence_tex2 = MathTex("\lambda \propto", "f(M_{11}...M_{22})").next_to(axes1, DOWN)
+        eiegen_equivalence_tex3 = MathTex("\lambda \propto", "f(M_{11}...M_{nn})").next_to(axes1, DOWN)
+        eiegen_equivalence_tex4 = MathTex("\lambda \propto", "\sqrt{n}").next_to(axes1, DOWN)
+        guas = axes1.plot(lambda x: np.exp(-(x/3)**2),color=BLUE)
+        guas_area = axes1.get_area(guas)
+        
+        self.playWait(FadeOut(ul),Create(axes1),Create(guas_area),Create(entry))
+        self.playWait(Create(entry_equivalence_tex),Create(arrow))
+        self.playWait(Create(eiegen_equivalence_tex1))
+        self.playWait(ReplacementTransform(eiegen_equivalence_tex1,eiegen_equivalence_tex2))
+        self.playWait(ReplacementTransform(eiegen_equivalence_tex2,eiegen_equivalence_tex3))
+        self.playWait(ReplacementTransform(eiegen_equivalence_tex3,eiegen_equivalence_tex4))
+        
 
 
 class ShowList(MovingCameraScene):
@@ -124,7 +140,7 @@ class Vectors(ThreeDScene):
     def get_area(self, vector1=None,vector2=None):
         return np.linalg.norm(np.cross(np.array(vector1.get_end()), np.array(vector2.get_end())))
         
-        
+
     def construct(self):
         
         axes = ThreeDAxes()
