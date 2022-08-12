@@ -52,7 +52,7 @@ class Cars(Scene):
         Group(*evTexs).arrange(direction=DOWN).to_corner(corner=LEFT+UP, buff=0.5)
         for i in range(len(pvs)):
             pvs[i] = np.sort(pvs[i])
-            pvs[i] = (pvs[i]-20000)/100
+            pvs[i] = (pvs[i]-20000)/100*2
         evs = [DecimalNumber(fill_opacity=0).add_updater(FunctorEv(i, pvs, t)).update().next_to(evTexs[i]) for i in range(size)]
         # self.play(*[Write(evTexs[i]) for i in range(len(evTexs))], *[Write(evs[i]) for i in range(len(evs))])
         self.add(*evs)
@@ -66,10 +66,10 @@ class Cars(Scene):
         # self.play(*[Transform(temp[i], buses[i].copy()) for i in range(size)])
         self.add(*buses)
         # self.remove(*temp)
-        self.play(*[FadeIn(busImages[i], scale=1.5) for i in range(len(busImages))])
+        # self.play(*[FadeIn(busImages[i], scale=1.5) for i in range(len(busImages))])
 
         spaces = [BraceBetweenPoints(ORIGIN, ORIGIN).add_updater(FunctorB(buses, i)).update() for i in range(size-1)]
-        spaceNums = [DecimalNumber(font_size=8).add_updater(FunctorDiff(spaces, evs, i)).update() for i in range(size-1)]
+        spaceNums = [DecimalNumber(font_size=18).add_updater(FunctorDiff(spaces, evs, i)).update() for i in range(size-1)]
         self.add(*spaces, *spaceNums)
         self.wait(3)
         self.remove(*spaceNums)
@@ -80,7 +80,7 @@ class Cars(Scene):
         for i in range(len(pvs)):
             freqs[i] = freqs[i-1].copy()
             for j in range(size-1):
-                freqs[i][np.abs(int(4*size/5*(pvs[i][j+1]-pvs[i][j])))] += 1
+                freqs[i][np.abs(int(4/2*size/5*(pvs[i][j+1]-pvs[i][j])))] += 1
         def chartFunc(c: BarChart, values, total):
             values = values/total
             # np.ceil()
@@ -134,10 +134,10 @@ class Cars(Scene):
         # self.play(*[Transform(temp[i], buses[i].copy()) for i in range(size)])
         self.add(*buses)
         # self.remove(*temp)
-        self.play(*[FadeIn(busImages[i], scale=1.5) for i in range(len(busImages))])
+        # self.play(*[FadeIn(busImages[i], scale=1.5) for i in range(len(busImages))])
 
         spaces = [BraceBetweenPoints(ORIGIN, ORIGIN).add_updater(FunctorB(buses, i)).update() for i in range(size-1)]
-        spaceNums = [DecimalNumber(font_size=8).add_updater(FunctorDiff(spaces, evs, i)).update() for i in range(size-1)]
+        spaceNums = [DecimalNumber(font_size=18).add_updater(FunctorDiff(spaces, evs, i)).update() for i in range(size-1)]
         self.add(*spaces, *spaceNums)
         self.wait(3)
         self.remove(*spaceNums)

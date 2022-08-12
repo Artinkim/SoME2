@@ -1,6 +1,7 @@
 from manim import *
 import numpy as np
 from utils import ChangingMatrix
+
 # size = (2, 2)
 #         bounds = (-10, 10)
 #         iterations = 100
@@ -49,6 +50,11 @@ from utils import ChangingMatrix
 
 class EnsembleAverage(Scene):
     def construct(self):
+        # sumTex = MathTex(r" = \frac{1}{n}" + " \sum_{i=0}^{n}", "f(M)")
+        # sumTex.set_color_by_tex("f(M)", color.YELLOW)
+        # self.add(sumTex)
+        # return
+
 
         # m = DecimalMatrix([[1, 0], [0, 0]])
         # print(m[0][0])
@@ -75,7 +81,7 @@ class EnsembleAverage(Scene):
         self.play(nums[0][0].animate.next_to(entryEq), FadeIn(entryEq, scale=1.5))
         self.wait(1)
 
-        traceEq = MathTex("trace(M) = ").move_to(entryEq, aligned_edge=LEFT)
+        traceEq = Tex("Tr($M$) = ").move_to(entryEq, aligned_edge=LEFT)
         tracePlus = MathTex(" + ").next_to(nums[0][0].copy().next_to(traceEq))
         self.play(nums[0][0].animate.next_to(traceEq), nums[1][1].animate.next_to(tracePlus), Transform(entryEq, traceEq), FadeIn(tracePlus, scale=1.5))
         self.wait(0.5)
@@ -85,26 +91,46 @@ class EnsembleAverage(Scene):
         self.wait(1)
         self.remove(entryEq)
 
-        detEq = MathTex("det(M) = ").move_to(entryEq, aligned_edge=LEFT)
+        detEq = MathTex("\det({M}) = ").move_to(entryEq, aligned_edge=LEFT)
         nums = [[MathTex(str(matrix.nums[x][y].get_value())).move_to(matrix.nums[x][y]) for y in range(len(matrix.nums[0]))] for x in range(len(matrix.nums))]
-        detRight = MathTex("(", nums[0][0].get_tex_string(), "*", nums[1][1].get_tex_string(), ") - (", nums[0][1].get_tex_string(), "*", nums[1][0].get_tex_string(), ")").next_to(detEq)
+        detRight = MathTex("(", nums[0][0].get_tex_string(), ")(", nums[1][1].get_tex_string(), ") - (", nums[0][1].get_tex_string(), ")(", nums[1][0].get_tex_string(), ")").next_to(detEq)
         self.play(FadeOut(traceRight, scale = 0.5), Transform(traceEq, detEq), TransformMatchingTex(Group(*nums[0], *nums[1]), detRight))
         self.wait(0.5)
 
         det = DecimalNumber(dets[0]).next_to(detEq)
+        dets = [np.round(np.linalg.det(np.matmul(np.transpose(matricies[i]), matricies[i])), decimals=2) for i in range(len(matricies))]
         self.play(Transform(detRight, det))
         self.remove(traceEq, detRight)
+
+        detEqCopy = detEq.copy()
+        detCopy = det.copy()
+
+        self.add(detEqCopy, detCopy)
+        self.wait(1)
+
+        # return
+
+        detEq = Tex("Tr(${M^\dagger M}$) = ").move_to(entryEq, aligned_edge=LEFT)
+        nums = [[MathTex(str(matrix.nums[x][y].get_value())).move_to(matrix.nums[x][y]) for y in range(len(matrix.nums[0]))] for x in range(len(matrix.nums))]
+        det = DecimalNumber(dets[0]).next_to(detEq)
+        self.play(Transform(detEqCopy, detEq), Transform(detCopy, det))
+        self.wait(0.5)
+
+        self.remove(detEqCopy, detCopy)
         self.add(detEq, det)
         det.add_updater(lambda d: d.set_value(dets[int(t.get_value())]))
         self.wait(1)
 
+
+
         g = VGroup(matrixLabel, matrix, detEq, det)
-        averageDetTex = MathTex("Average Det:")
+        averageDetTex = Tex("Average Tr(${M^\dagger M}$)")
         totalDets = [0]
         for x in dets:
             totalDets.append(totalDets[-1]+x)
         averageDet = DecimalNumber().add_updater(lambda a: a.set_value(np.round(totalDets[1+int(iterations*rate_functions.ease_in_expo(t.get_value()*scale/iterations))]/int(1+iterations*rate_functions.ease_in_expo(t.get_value()*scale/iterations)), decimals=2))).update()
-        self.play(g.animate.shift(LEFT*3+UP*3).scale(0.4), FadeIn(VGroup(averageDetTex, averageDet.next_to(averageDetTex, direction=DOWN)).scale(2).move_to(RIGHT*3+UP*2)))
+        averageDetGroup = VGroup(averageDetTex, averageDet.next_to(averageDetTex, direction=DOWN)).scale(2).move_to(RIGHT*3+UP*2)
+        self.play(g.animate.shift(LEFT*3+UP*3).scale(0.4), FadeIn(averageDetGroup))
 
         # cg = VGroup()
         # cg.add_updater(lambda g: g.become(VGroup(matrix.copy(), detEq.copy(), det.copy())))
@@ -129,19 +155,36 @@ class EnsembleAverage(Scene):
         t.set_value(t.get_value()-1)
         self.wait(1)
 
-        sumTex = MathTex(r" = \frac{1}{n}" + " \sum_{i=0}^{n}det(M_i)").next_to(averageDet.copy().move_to(DOWN*1+LEFT*5).scale(0.5))
-        self.play(FadeOut(averageDetTex, scale=0.5), averageDet.animate.move_to(DOWN*1+LEFT*5).scale(0.5), FadeIn(sumTex, scale=1.5))
+        sumTex = MathTex(r" = \frac{1}{n}" + " \sum_{i=1}^{n}", "\\text{Tr(${M_i^\dagger M_i}$)}").next_to(averageDetGroup.copy().move_to(DOWN*1+LEFT*5).scale(0.25))
+        # averageDetGroup = VGroup(averageDetTex, averageDet).arrange(direction=DOWN)
+        self.play(averageDetGroup.animate.move_to(DOWN*1+LEFT*5).scale(0.25), FadeIn(sumTex, scale=1.5))
+
+        sumTexCopy = sumTex.copy()
+        self.add(sumTexCopy)
+        self.remove(sumTex)
+        sumTex = MathTex(r" = \frac{1}{n}" + " \sum", "f(M)").next_to(averageDetGroup.copy().move_to(DOWN*1+LEFT*5).scale(0.5))
+        sumTex.set_color_by_tex("f(M)", color.YELLOW)
+
+        averageDetTexCopy = averageDetTex.copy()
+        self.add(averageDetTexCopy)
+        self.remove(averageDetTex)
+        averageDetTex = MathTex("<f(M)>").scale(0.5).move_to(averageDetTex)
+        averageDetTex.set_color_by_tex("f(M)", color.YELLOW)
+
+        self.play(Transform(averageDetTexCopy, averageDetTex), TransformMatchingTex(sumTexCopy, sumTex))
 
         integralEqual = MathTex(" = ").next_to(sumTex)
-        shortIntegral = MathTex(r"\int", "... ",  "dM").next_to(integralEqual)
-        longIntegral = MathTex(r"\int", "f(M)*p(M) ",  "dM").next_to(integralEqual)
-        b = Brace(shortIntegral)
-        bTex = MathTex(r"\int\int\int\int ... dM_{11}dM_{12}dM_{21}dM_{22}").scale(0.4).next_to(b, direction=DOWN)
-        b2 = Brace(longIntegral)
+        shortIntegral = MathTex(r"\int", " dM").next_to(integralEqual)
+        longIntegral = MathTex(" f(M)", " p(M)").next_to(shortIntegral)
+        longIntegral.set_color_by_tex("f(M)", color.YELLOW)
 
-        self.play(FadeIn(shortIntegral, scale=1.5))
-        self.play(FadeIn(b, scale=1.5), FadeIn(bTex, scale=1.5))
+        b = Brace(shortIntegral)
+        bTex = MathTex(r"\int\int\int\int dM_{11}dM_{12}dM_{21}dM_{22}").scale(0.4).next_to(b, direction=DOWN)
+
+        self.play(FadeIn(integralEqual, shortIntegral, b, bTex, longIntegral, scale=1.5))
+        # , FadeIn(b, scale=1.5), FadeIn(bTex, scale=1.5), FadeIn(longIntegral, scale=1.5)
+        # self.play(FadeIn(b, scale=1.5), FadeIn(bTex, scale=1.5))
         self.wait(1)
-        self.play(TransformMatchingTex(shortIntegral, longIntegral), TransformMatchingShapes(b, b2), bTex.animate.next_to(b2, direction=DOWN), FadeIn(integralEqual, scale=1.5))
+        # self.play(TransformMatchingTex(shortIntegral, longIntegral), TransformMatchingShapes(b, b2), bTex.animate.next_to(b2, direction=DOWN), FadeIn(integralEqual, scale=1.5))
 
         self.wait(5)
