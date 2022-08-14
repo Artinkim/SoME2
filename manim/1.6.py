@@ -16,13 +16,19 @@ class Intro(Scene):
         cob_tex = MathTex("\\widetilde{M} = UM{U}^{-1}").move_to(equivalency_tex1)
         self.add(funtion_tex)
         self.play(TransformMatchingTex(funtion_tex,det_tex),run_time=2)
+        self.wait(1)
         self.play(TransformMatchingTex(det_tex,trace_tex),run_time=2)
+        self.wait(1)
         self.play(TransformMatchingTex(trace_tex,moved_function_tex1),run_time=2)
+        self.wait(1)
         self.play(TransformMatchingShapes(moved_function_tex1,moved_function_tex2),run_time=0.5)
+        self.wait(1)
         self.play(Write(basis_invariant_tex),TransformMatchingTex(moved_function_tex2,equivalency_tex1),run_time=2)
+        self.wait(1)
         self.play(AnimationGroup(
             TransformMatchingTex(equivalency_tex1,equivalency_tex2), 
             Write(cob_tex),lag_ratio=0.5),run_time=2)
+        self.wait(1)
         self.play(Wiggle(equivalency_tex2.submobjects[0]),Wiggle(equivalency_tex2.submobjects[3]),run_time=2)
         self.wait(1)
 

@@ -63,17 +63,27 @@ class EnsembleAverage(Scene):
 
         size, bounds = (2, 2), (-10, 10)
         iterations, scale = 25000, 1000
-        matricies = [np.round(bounds[0]+(bounds[1]-bounds[0])*np.random.rand(size[0], size[1]), decimals=2) for _ in range(iterations)]
-        matricies[0][1][1] = np.abs(matricies[0][1][1])
+        matricies = np.round(np.random.uniform(*bounds,size=(iterations,*size)),decimals=2)
+        matricies[0][1][0] = 2.73
+        tempM = Matrix(matricies[0], h_buff=1.6).move_to(LEFT*0.5)
+        for m in matricies:
+            m[1][0]=m[0][1] 
+        
+        
         dets = [np.round(np.linalg.det(matricies[i]), decimals=2) for i in range(len(matricies))]
         adets = []
         t = ValueTracker(0)
         
+        
         matrix = ChangingMatrix(matricies,t).move_to(LEFT*0.5)
         # numsV = [[matrix.nums[x][y].get_value() for y in range(len(matrix.nums[0]))] for x in range(len(matrix.nums))]
-
         matrixLabel = MathTex("M = ").next_to(matrix, direction=LEFT)
-        self.add(matrix, matrixLabel)
+        self.play(FadeIn(tempM), Write(matrixLabel))
+        self.wait(1)
+        self.play(FadeOut(tempM), FadeIn(matrix))
+        
+        
+        
         nums = [[MathTex(str(matrix.nums[x][y].get_value())).move_to(matrix.nums[x][y]) for y in range(len(matrix.nums[0]))] for x in range(len(matrix.nums))]
         self.wait(1)
 
@@ -173,11 +183,11 @@ class EnsembleAverage(Scene):
         # integralEqual = MathTex(" = ").next_to(sumTex)
         shortIntegral = MathTex(r"\int", " dM").move_to(averageDet)
         longIntegral = MathTex(" f(M)", " p(M)").next_to(shortIntegral)
-        longIntegral.set_color_by_tex("f(M)", color.YELLOW)
+        
 
         b = Brace(shortIntegral)
         bTex = MathTex(r"\int\int\int\int dM_{11}dM_{12}dM_{21}dM_{22}").scale(0.4).next_to(b, direction=DOWN)
-        integralGroup = VGroup(shortIntegral, longIntegral, b, bTex)
+        integralGroup = VGroup(shortIntegral, longIntegral)
 
         averageDetTexCopy = averageDetGroup.copy()
         self.add(averageDetTexCopy)
@@ -189,9 +199,18 @@ class EnsembleAverage(Scene):
         self.add(sumTexCopy)
         self.remove(sumTex)
         sumTex = MathTex(r" = \frac{1}{n}" + " \sum_{i=1}^{n}", "f(M)").next_to(longIntegral)
-        sumTex.set_color_by_tex("f(M)", color.YELLOW)
+        
 
         self.play(Transform(averageDetTexCopy, averageDetGroup), TransformMatchingTex(sumTexCopy, sumTex))
+        self.wait(1)
+        self.play(Write(b), Write(bTex))
+        self.wait(1) 
+        self.play(
+            sumTex.animate.set_color_by_tex("f(M)", color.YELLOW),
+            longIntegral.animate.set_color_by_tex("f(M)", color.YELLOW))
+        self.wait(1)
+        self.play(longIntegral.animate.set_color_by_tex("p(M)", color.BLUE))
+        
 
         # integralEqual = MathTex(" = ").next_to(sumTex)
         # shortIntegral = MathTex(r"\int", " dM").next_to(integralEqual)
