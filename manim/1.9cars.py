@@ -43,7 +43,7 @@ class Cars(Scene):
         iterations = 10000
         t = ValueTracker(0)
 
-        NTex = Text("N = " + str(size) + " (" + str(size) + " buses in one hour)").scale(0.5).to_corner(corner=LEFT+UP, buff=0.5)
+        NTex = Text("N = " + str(size)).scale(0.5).to_corner(corner=LEFT+UP, buff=0.5)
         self.add(NTex)
 
         pvs = [scipy.stats.poisson.rvs(20000, size=size) for _ in range(iterations)]
@@ -99,6 +99,9 @@ class Cars(Scene):
 
 
         self.play(t.animate(rate_func=rate_functions.ease_in_expo).set_value(iterations-1), run_time=7)
+        self.wait(0.5)
+        poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(LEFT*4.0+UP*0.1)
+        self.play(Create(poissonFunc))
         self.wait(3)
         # return
         self.play(*[FadeOut(x, shift=LEFT*10) for x in self.mobjects])
