@@ -57,66 +57,57 @@ class Intro1(Scene):
         self.playWait(ReplacementTransform(curr_equation.copy(), schrodinger_equation8),Create(brace), Write(brace_tex))
 
 
-# class Intro2(Scene):
-#     def playWait(self, *args,**kwargs):
-#             self.play(*args,**kwargs)
-#             self.wait(1)    
+class Intro2(Scene):
+    def playWait(self, *args,**kwargs):
+            self.play(*args,**kwargs)
+            self.wait(1)    
                
-#     def construct(self):    
-#         max_entropy = MathTex("P(E_i) &= \\frac{e^{-\\beta E_i}}{Z};\>\> Z = \sum_i e^{-\\beta E_i}, \>\>").to_edge(UR,buff=1)
+    def construct(self):    
+        max_entropy = MathTex("P(E_i) &= \\frac{e^{-\\beta E_i}}{Z};\>\> Z = \sum_i e^{-\\beta E_i}, \>\>").to_edge(UR,buff=1)
        
        
-#         exact_state = MathTex("(x_1,...,x_N ; p_1, ..., p_N)").shift(LEFT*3)
-#         weight_factor1 = MathTex("&\\rightarrow P(E) \propto e^{-E(x_1,...x_N; p_1,...,p_N) }").next_to(exact_state,RIGHT)
+        exact_state = MathTex("(\\lambda_1,...,\\lambda_N ; p_1, ..., p_N)").shift(LEFT*3)
+        weight_factor1 = MathTex(r"\rightarrow P(E) \propto e^{-E(\lambda_1,...\lambda_N; p_1,...,p_N) }").next_to(exact_state,RIGHT)
+        exact_state.add(Tex("exact state").next_to(exact_state, DOWN, buff=0.5))
+        weight_factor1.add(MathTex(r"\rightarrow \text{weight factor for each state} }").next_to(weight_factor1, DOWN, buff=0.5))
         
-#         phase_state = MathTex("(\sigma_1,...,\sigma_N )").next_to(exact_state,DOWN)
-#         weight_factor2 = MathTex("&\\rightarrow P(E) \propto e^{-E(\sigma_1,...,\sigma_N)").next_to(phase_state,RIGHT)
+        phase_state = MathTex("(\sigma_1,...,\sigma_N )")
+        weight_factor2 = MathTex("&\\rightarrow P(E) \propto e^{-E(\sigma_1,...,\sigma_N)").next_to(phase_state,RIGHT)
         
-#         energy_tex= MathTex("E({x1, ..., xN ; p1, ..., pN })")
-#         energy_state = MathTex(r"E &\rightarrow \langle E \rangle = \hspace{-.2cm} \sum_{\text{states of systems}} \hspace{-.2cm}E(\text{state}) P(E(\text{state}))\\ \text{exact energy} &\rightarrow \text{statistical prediction by averaging over states}")
+        energy_tex= MathTex("E({\\lambda_1, ..., \\lambda_N ; p_1, ..., p_N })")
+        energy_state = MathTex(r"E &\rightarrow \langle E \rangle = \hspace{-.2cm} \sum_{\text{states of systems}} \hspace{-.2cm}E(\text{state}) P(E(\text{state}))\\ \text{exact energy} &\rightarrow \text{statistical prediction by averaging over states}")
         
         
-#         self.playWait(Write(max_entropy))
+        self.playWait(Write(max_entropy))
         
-#         self.playWait(Write(exact_state))
-#         self.playWait(ReplacementTransform(exact_state.copy(),weight_factor1))
+        self.playWait(Write(exact_state))
+        self.playWait(ReplacementTransform(exact_state.copy(),weight_factor1))
+        self.playWait(FadeOut(exact_state,weight_factor1))
         
-#         self.playWait(Write(phase_state))
-#         entry_matrix = MobjectMatrix([
-#             [MathTex("M_{11}"), MathTex("M_{12}"), MathTex("..."), MathTex("M_{1P}")],
-#             [MathTex("M_{21}"), MathTex("M_{22}"), MathTex("..."), MathTex("M_{2P}")],
-#             [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
-#             [MathTex("M_{N1}"), MathTex("M_{N2}"), MathTex("..."), MathTex("M_{NP}")]], h_buff = 1.6)
-#         unkown_matrix = MobjectMatrix([
-#             [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")],
-#             [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")],
-#             [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
-#             [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")]], h_buff = 1.6)
-#         self.playWait(ReplacementTransform(unkown_matrix,RANDOM MATRIX))
+        self.playWait(Write(phase_state))
+        self.playWait(ReplacementTransform(phase_state.copy(),weight_factor2))
+        self.playWait(FadeOut(phase_state,weight_factor2))
         
-#         self.playWait(
-#             Write(energy_tex),
-#             FadeOut(exact_state,weight_factor1,phase_state,weight_factor2,max_entropy)
-#         )
-#         self.playWait(ReplacementTransform(energy_tex,energy_state))
+        self.playWait(Write(energy_tex))
+        self.playWait(ReplacementTransform(energy_tex,energy_state))
         
-#         hamiltonian_weight = MathTex(r"H & \rightarrow P(M) \propto e^{-\frac{N}{2} Tr(HH^{\dagger})} \\ \text{exact system} & \rightarrow \text{weight factor for each system}\notag\\")
-#         self.playWait(Write(hamiltonian_weight))
-        
-#         self.playWait(ReplacementTransform())
-#         example1 = MathTex("x10 = 0.310231").next_to(energy_state,DOWN,buff=1).shift(LEFT)
-#         example2 = MathTex("s = 1.2").next_to(example1,RIGHT,buff=1)
-#         self.playWait(Write(example1))
-#         self.playWait(Write(example2))
-        
-#         tex_final = MathTex(r"(x_1,...,x_N) & \rightarrow \langle x_1\rangle, \>\> \langle x_1-x_2\rangle, ... \> \langle f(x_1,..,x_N)\rangle \\\text{exact spectrum} & \rightarrow \text{statistical properties of spectrum}\notag\\ \text{requires: knowing $\&$ diagonalizing $H$} & \rightarrow \>\> \rho(x), P(s)")
-#         tex_final.scale(0.75).shift(LEFT*1.5)
-#         self.playWait(FadeOut(energy_state,example1,example2))
-#         self.playWait(Write(tex_final))
+        hamiltonian_weight = MathTex(r"H & \rightarrow P(M) \propto e^{-\frac{N}{2} Tr(HH^{\dagger})} \\ \text{exact system} & \rightarrow \text{weight factor for each system}\notag\\")
+        self.playWait(FadeOut(energy_state))
+        self.playWait(Write(hamiltonian_weight))
+        self.playWait(FadeOut(hamiltonian_weight))
         
         
         
-#         # self.playWait(Write(hamiltonian_weight))
+        example1 = MathTex("\\lambda_{10} = 0.310231").next_to(energy_state,DOWN,buff=1).shift(LEFT)
+        example2 = MathTex("s = 1.2").next_to(example1,RIGHT,buff=1)
+        self.playWait(Write(example1))
+        self.playWait(Write(example2)) 
+        self.playWait(FadeOut(example1,example2))
+        
+        tex_final = MathTex(r"(\lambda_1,...,\lambda_N) \rightarrow \langle \lambda_1\rangle, \>\> \langle \lambda_1-\lambda_2\rangle, ... \> \langle f(\lambda_1,..,\lambda_N)\rangle \\\text{exact spectrum} & \rightarrow \text{statistical properties of spectrum}\notag\\ \text{requires: knowing $\&$ diagonalizing $H$} & \rightarrow \>\> \rho(x), P(s)")
+        tex_final.scale(0.75).shift(LEFT*0.1)
+        self.playWait(Write(tex_final))
+
         
         
         
