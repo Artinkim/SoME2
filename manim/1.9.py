@@ -6,9 +6,9 @@ class Pain(Scene):
 
         eq = [""]*113
         # eq1.26:    H&= \begin{pmatrix} H_{11} & H_{12}\\H_{21} & H_{22} \end{pmatrix}
-        eq.extend(r"q(s) &= P(t>s), q(s+ds) &= q(ds|s), q(s+ds) &= q(s) q(ds), q(s+ds) &= q(s)[1- c\times ds], \frac{q(s+ds)-q(s)}{ds} &\equiv \frac{dq(s)}{ds}= - c q(s), q(s) = e^{-cs}, P(s) &= - \frac{dq(s)}{ds} = c e^{-cs}, q(s+ds) &= q(ds|s), q(s+ds) &= q(s) q_s(ds), q(s+ds) &= q(s) q_s(ds) = q(s) [1- c\times s \times ds], \frac{q(s+ds) - q(s)}{ds} &\equiv \frac{dq(s)}{ds} =   - c\times s\times  q(s), q(s) &= - c e^{-cs^2/2}, P(s) &= - \frac{dq(s)}{ds} \propto s e^{-cs^2/2}, H&= \begin{pmatrix} H_{11} & H_{12}\\H_{12} & H_{22} \end{pmatrix}, &(\Lambda-H_{11})(\Lambda-H_{22}) - H_{12}^2 = 0, \Lambda_{\pm} &= \frac{H_{11} +H_{22}}{2} \pm \frac{1}{2}\sqrt{(H_{11}-H_{22})^2 + 4H_{12}^2}, s&\equiv \Lambda_+ - \Lambda_- = \sqrt{(H_{11}-H_{22})^2 + 4H_{12}^2}, P(s) &\propto \int dH_{11} dH_{22} dH_{12} \delta(s-\sqrt{(H_{11}-H_{22})^2 + 4 H_{12}^2}) P(H_{11}) P(H_{22}) P(H_{12}), &\propto \int dH_{11} dH_{22} dH_{12} \delta(s-\sqrt{(H_{11}-H_{22})^2 + 4 H_{12}^2}) e^{-\frac{1}{2}(H_{11}^2 +H_{22}^2 + 2H_{12}^2)}, P(s) &\propto \int du dv dw \delta(s-\sqrt{u^2 + w^2}) e^{-(u^2+v^2+w^2)}, P(s) &\propto \int du dw \delta(s-2\sqrt{u^2 + w^2}) e^{-(u^2+w^2)}, P(s) &\propto \int_0^\infty r dr \int_0^{2\pi} d\theta \delta(s-2r) e^{-r^2}, P(s) \propto s e^{-s^2}, P(M_{11},M_{12},...,M_{NN}) \rightarrow P(\Lambda_1,\Lambda_2,...,\Lambda_N)".split(", ")
+        eq.extend(r"q(s) &= P(t>s), q(s+ds) &= q(ds|s), q(s+ds) &= q(s) q(ds), q(s+ds) &= q(s)[1- c\times ds], \frac{q(s+ds)-q(s)}{ds} &\equiv \frac{dq(s)}{ds}= - c q(s), q(s) = e^{-cs}, P(s) &= - \frac{dq(s)}{ds} = c e^{-cs}, q(s+ds) &= q(ds|s), q(s+ds) &= q(s) q_s(ds), q(s+ds) &= q(s) q_s(ds) = q(s) [1- c\times s \times ds], \frac{q(s+ds) - q(s)}{ds} &\equiv \frac{dq(s)}{ds} =   - c\times s\times  q(s), q(s) &= - c e^{-cs^2/2}, P(s) &= - \frac{dq(s)}{ds} \propto s e^{-cs^2/2}, H&= \begin{pmatrix} H_{11} & H_{12}\\H_{12} & H_{22} \end{pmatrix}, &(\lambda-H_{11})(\lambda-H_{22}) - H_{12}^2 = 0, \lambda_{\pm} &= \frac{H_{11} +H_{22}}{2} \pm \frac{1}{2}\sqrt{(H_{11}-H_{22})^2 + 4H_{12}^2}, s&\equiv \lambda_+ - \lambda_- = \sqrt{(H_{11}-H_{22})^2 + 4H_{12}^2}, P(s) &\propto \int dH_{11} dH_{22} dH_{12} \delta(s-\sqrt{(H_{11}-H_{22})^2 + 4 H_{12}^2}) P(H_{11}) P(H_{22}) P(H_{12}), &\propto \int dH_{11} dH_{22} dH_{12} \delta(s-\sqrt{(H_{11}-H_{22})^2 + 4 H_{12}^2}) e^{-\frac{1}{2}(H_{11}^2 +H_{22}^2 + 2H_{12}^2)}, P(s) &\propto \int du dv dw \delta(s-\sqrt{u^2 + w^2}) e^{-(u^2+v^2+w^2)}, P(s) &\propto \int du dw \delta(s-2\sqrt{u^2 + w^2}) e^{-(u^2+w^2)}, P(s) &\propto \int_0^\infty r dr \int_0^{2\pi} d\theta \delta(s-2r) e^{-r^2}, P(s) \propto s e^{-s^2}, P(M_{11},M_{12},...,M_{NN}) \rightarrow P(\lambda_1,\lambda_2,...,\lambda_N)".split(", ")
             )
-        eq.extend(r"M &\rightarrow U \Lambda U^{\dagger}, e^{-\frac{N}{2} Tr(MM^{\dagger})} &\rightarrow e^{-\frac{N}{2} \sum_i \Lambda_i^2} \times J^{-1}\bigg(\frac{\partial M_{ij}}{\partial \Lambda_i \partial u_{ij}}\bigg), P(M_{11},M_{12},...,M_{NN}) \rightarrow P(\Lambda_1,\Lambda_2,...,\Lambda_N), e^{-\frac{N}{2} Tr(MM^{\dagger})} \rightarrow e^{-\frac{N}{2} \sum_i \Lambda_i^2 + \log\big( J^{-1} (\{\Lambda_i\})\big)}, \int \prod_{i=1}^N d\Lambda_i e^{-\frac{N}{2} \sum_i V(\Lambda_i) + \log\big( J^{-1} (\{\Lambda_i\})\big)} \equiv     \int \prod_{i=1}^N d\Lambda_i e^{- N S(\{\Lambda_i\}]} \approx e^{-N S(\{\Lambda_i^*\})} \times \text{corrections}, \frac{\partial S(\{\Lambda_i\})}{\partial \Lambda_i} &=0 \>\> \text{determines} \>\>\{\Lambda_i^*\}, e^{-\frac{N}{2} Tr(MM^{\dagger})} \rightarrow e^{-\frac{N}{2} \sum_i \Lambda_i^2 + \log\big( J^{-1} (\{\Lambda_i\})\big)}, P_{Poisson}(s) &\propto e^{-s}, P_{WD}(s) &\propto se^{-s^2}, \lim_{s\rightarrow 0} P_{Poisson}(s) &= 1, \lim_{s\rightarrow 0} P_{WD}(s) &= 0".split(", ")
+        eq.extend(r"M &\rightarrow U \Lambda U^{\dagger}, e^{-\frac{N}{2} Tr(MM^{\dagger})} &\rightarrow e^{-\frac{N}{2} \sum_i \lambda_i^2} \times J^{-1}\bigg(\frac{\partial M_{ij}}{\partial \lambda_i \partial u_{ij}}\bigg), P(M_{11},M_{12},...,M_{NN}) \rightarrow P(\lambda_1,\lambda_2,...,\lambda_N), e^{-\frac{N}{2} Tr(MM^{\dagger})} \rightarrow e^{-\frac{N}{2} \sum_i \lambda_i^2 + \log\big( J^{-1} (\{\lambda_i\})\big)}, \int \prod_{i=1}^N d\lambda_i e^{-\frac{N}{2} \sum_i V(\lambda_i) + \log\big( J^{-1} (\{\lambda_i\})\big)} \equiv     \int \prod_{i=1}^N d\lambda_i e^{- N S(\{\lambda_i\}]} \approx e^{-N S(\{\lambda_i^*\})} \times \text{corrections}, \frac{\partial S(\{\lambda_i\})}{\partial \lambda_i} &=0 \>\> \text{determines} \>\>\{\lambda_i^*\}, e^{-\frac{N}{2} Tr(MM^{\dagger})} \rightarrow e^{-\frac{N}{2} \sum_i \lambda_i^2 + \log\big( J^{-1} (\{\lambda_i\})\big)}, P_{Poisson}(s) &\propto e^{-s}, P_{WD}(s) &\propto se^{-s^2}, \lim_{s\rightarrow 0} P_{Poisson}(s) &= 1, \lim_{s\rightarrow 0} P_{WD}(s) &= 0".split(", ")
         )
 
         # eqTex = [MathTex(eq[0])]
@@ -25,7 +25,7 @@ class Pain(Scene):
         #     self.play(FadeOut(eqTex[i-1]), FadeIn(eqTex[i]))
 
 
-        mainPoints = [MathTex("\\text{Independent} \Lambda"), MathTex("\\text{Dependent} \Lambda"), MathTex("\\text{2x2}"), MathTex("\\text{NxN}")]
+        mainPoints = [MathTex("\\text{Independent} \lambda"), MathTex("\\text{Dependent} \lambda"), MathTex("\\text{2x2}"), MathTex("\\text{NxN}")]
         VGroup(*mainPoints).arrange_in_grid(rows=4, cols=1, buff=MED_LARGE_BUFF)
         for i in range(len(mainPoints)):
             self.play(Write(mainPoints[i]))
@@ -74,8 +74,8 @@ class Pain(Scene):
         self.wait(1)
 
         
-        twoTex = Tex("2 $\Lambda$ = 1 space")
-        nTex = Tex("N $\Lambda$ = N-1 spaces")
+        twoTex = Tex("2 $\lambda$ = 1 space")
+        nTex = Tex("N $\lambda$ = N-1 spaces")
         self.playwait(FadeIn(twoTex))
         self.playwait(Transform(twoTex, nTex))
         self.playwait(FadeOut(twoTex))
