@@ -25,36 +25,83 @@ class Intro1(Scene):
             [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")],
             [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
             [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")]], h_buff = 1.6)
-        
+       
+        ham_matrix = MobjectMatrix([
+            [MathTex("(1 -> 1"), MathTex("(1 -> 2)"), MathTex("(1 -> 3)"), MathTex("...   "), MathTex("(1 -> N)")],
+            [MathTex("(2 -> 1)"), MathTex("(2 -> 2)") ,MathTex("(2 -> 3)"), MathTex("...  "), MathTex("(2 -> N)")],
+            [MathTex("(3 -> 1)"), MathTex("(3 -> 2)"), MathTex("(3 -> 3)"), MathTex("...  "), MathTex("(3 -> N)")],
+            [MathTex(), MathTex(), MathTex(), MathTex("\ddots  "), MathTex()],
+            [MathTex("(N -> 1)"), MathTex("(N -> 2)"), MathTex("(N -> 3)"), MathTex("...  "), MathTex("(N -> N)")]
+            ], h_buff = 2.5).scale(0.5)
+        H_def = VGroup(VGroup(Tex("Encodes probablility to"),Tex("transition from state"),Tex("i $\\rightarrow$ j in a small time $\\Delta$t.")).arrange(DOWN)).next_to(ham_matrix,UP)
+        H_def.add(MathTex("H_{ij} \sim").next_to(H_def,LEFT))
+        H_letter = MathTex("H")
         waves1 = VGroup(*[CreateWave() for _ in range(7)]).arrange(DOWN)
         waves2 = VGroup(*[CreateWave() for _ in range(7)]).arrange(DOWN)
-        schrodinger_equation1 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
-        schrodinger_equation2 = VGroup(MathTex("H"), MathTex("\psi_n").scale(2).set_color(BLUE), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n").scale(2).set_color(BLUE)).arrange(RIGHT,buff=0.05)
-        schrodinger_equation3 = VGroup(MathTex("H"), waves1, MathTex(" &= "), MathTex("E_n"),waves2).arrange(RIGHT,buff=0.05)
-        schrodinger_equation4 = VGroup(MathTex("H").scale(2).set_color(RED), MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
-        schrodinger_equation5 = VGroup(MathTex("H").scale(2).set_color(RED), MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n").scale(2).set_color(YELLOW), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
-        schrodinger_equation6 = VGroup(entry_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
-        schrodinger_equation7 = VGroup(entry_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("(\\lambda_{1}, \\lambda_{2}, \\ldots)"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
-        schrodinger_equation8 = VGroup(MathTex("H = "),unkown_matrix).arrange(RIGHT,buff=0.05).to_edge(LEFT,buff=1).shift(DOWN)
+        schrodinger_equation1 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("\\lambda_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation2 = VGroup(MathTex("H"), MathTex("\psi_n").scale(2).set_color(BLUE), MathTex(" &= "), MathTex("\\lambda_n"), MathTex("\psi_n").scale(2).set_color(BLUE)).arrange(RIGHT,buff=0.05)
+        schrodinger_equation3 = VGroup(MathTex("H"), waves1, MathTex(" &= "), MathTex("\\lambda_n"),waves2).arrange(RIGHT,buff=0.05)
+        schrodinger_equation4 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("\\lambda_n").scale(2).set_color(ORANGE), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation5 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n").scale(2).set_color(YELLOW), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation6 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("(\\lambda_{1}, \\lambda_{2}, \\ldots)").scale(1.5).set_color(ORANGE), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation7 = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("(E_{1}, E_{2}, \\ldots)").scale(1.5).set_color(YELLOW) , MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        
+        schrodinger_equation1E = VGroup(MathTex("H"), MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation8 = VGroup(entry_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation9 = VGroup(unkown_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        
+        #schrodinger_equation8 = VGroup(MathTex("H = "),unkown_matrix).arrange(RIGHT,buff=0.05).to_edge(LEFT,buff=1).shift(DOWN)
         curr_equation = schrodinger_equation1.copy()
         
-        eigen_list = MathTex("(\\lambda_{1}, \\lambda_{2}, \\ldots)").next_to(entry_matrix, DOWN)
+        #eigen_list = MathTex("(\\lambda_{1}, \\lambda_{2}, \\ldots)").next_to(entry_matrix, DOWN)
         
-        self.playWait(Write(curr_equation))
+        self.playWait(Write(H_letter))
+        self.playWait(Write(H_def),ReplacementTransform(H_letter,ham_matrix))
+        self.playWait(FadeOut(H_def),ReplacementTransform(ham_matrix,curr_equation[0]),FadeIn(curr_equation[1:]))
+        
+        def playWait(self, *args,**kwargs):
+            self.play(*args,**kwargs)
+            self.wait(0.2)
+            
         self.playWait(Transform(curr_equation, schrodinger_equation2))
         self.playWait(Transform(curr_equation, schrodinger_equation3))
+        
         self.playWait(Transform(curr_equation, schrodinger_equation1))
         self.playWait(Transform(curr_equation, schrodinger_equation4))
         self.playWait(Transform(curr_equation, schrodinger_equation5))
         self.playWait(Transform(curr_equation, schrodinger_equation6))
-        self.playWait(Write(eigen_list))
-        self.playWait(Transform(eigen_list,schrodinger_equation7.submobjects[3]),Transform(curr_equation, schrodinger_equation7))
-        self.remove(eigen_list)
-        self.playWait(Transform(curr_equation, schrodinger_equation1))
-        self.play(curr_equation.animate.to_edge(UL,buff=1))
+        self.playWait(Transform(curr_equation, schrodinger_equation7))
+
+        self.playWait(Transform(curr_equation, schrodinger_equation1E))
+        self.playWait(Transform(curr_equation, schrodinger_equation8))
+        self.playWait(Transform(curr_equation, schrodinger_equation9))
         brace = Brace(unkown_matrix,UP)
         brace_tex = brace.get_text("? X ?")
-        self.playWait(ReplacementTransform(curr_equation.copy(), schrodinger_equation8),Create(brace), Write(brace_tex))
+        self.playWait(Create(brace),Write(brace_tex))
+
+class Intro1P2(Scene):
+    def playWait(self, *args,**kwargs):
+            self.play(*args,**kwargs) 
+            self.wait(1)
+    def construct(self):
+        unkown_matrix = MobjectMatrix([
+            [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")],
+            [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")],
+            [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
+            [MathTex("?"), MathTex("?"), MathTex("..."), MathTex("?")]], h_buff = 1.6)
+        random_matrix = MobjectMatrix([
+            [MathTex("2.6"), MathTex("-6.32"), MathTex("..."), MathTex("9.47")],
+            [MathTex("-4.71"), MathTex("2.42"), MathTex("..."), MathTex("-1.13")],
+            [MathTex(), MathTex(), MathTex("\ddots"), MathTex()],
+            [MathTex("6.90"), MathTex("-1.52"), MathTex("..."), MathTex("8.51")]], h_buff = 1.6)
+        schrodinger_equation1 = VGroup(unkown_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        schrodinger_equation2 = VGroup(random_matrix, MathTex("\psi_n"), MathTex(" &= "), MathTex("E_n"), MathTex("\psi_n")).arrange(RIGHT,buff=0.05)
+        brace = Brace(unkown_matrix,UP)
+        brace_tex = brace.get_text("? X ?")
+        self.add(schrodinger_equation1,brace,brace_tex)
+        self.wait(1)
+        self.playWait(Transform(schrodinger_equation1, schrodinger_equation2), FadeOut(brace,brace_tex))
+         
 
 
 class Intro2(Scene):

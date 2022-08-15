@@ -39,7 +39,7 @@ class ShowEnsemble(MovingCameraScene):
             self.wait(1)
             
     def construct(self):
-        N = 2 # size of matrix   
+        N = 5 # size of matrix   
         niter = 5000 # number of samples
         dets = np.zeros((niter))
         histograms = np.zeros((niter,100))
@@ -55,7 +55,7 @@ class ShowEnsemble(MovingCameraScene):
         
         
         equals_tex = Tex("M = ")
-        matrix = ChangingMatrix(matricies,t).next_to(equals_tex)
+        matrix = ChangingMatrix(matricies,t).scale(0.25).next_to(equals_tex)
         sqrd = MathTex("Tr(M^2) =")
         tr_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd).update()
         n_tex = Tex("N: ")
@@ -114,22 +114,27 @@ class ShowEnsemble(MovingCameraScene):
 
 class ShowList(MovingCameraScene):
     def construct(self):
-        strings = ["det(M)", "Tr(M)", "Tr(M^2)","...","Tr(M^k)", "\\text{eigenvectors} = v : Mv = Lv \\text{for some} L"]
+        strings = ["det(M)", "Tr(M)","Tr(M^\dagger M)", "Tr(M^2)","...","Tr(M^k)", "\\text{eigenvectors} = v : Mv = Lv \\text{ for some } L"]
         texs = VGroup(*[MathTex(str(i+1)+"\\text{. }"+s) for i,s in enumerate(strings)]).arrange(DOWN,aligned_edge=LEFT,buff=0.5).to_edge(UL)
        
         sqrd = MathTex("Tr(M^2)").move_to(texs[2],RIGHT)
         sum_tex = MathTex("= \sum \lambda_i^2").next_to(sqrd)
         
-        brace = Tex("\left\}").scale(7)
+        brace = Tex("\left\}").scale(10)
         func = MathTex("f(\{\lambda_i\})")
-        brace_func = VGroup(brace,func).arrange(RIGHT).next_to(texs[2])
+        brace_func = VGroup(brace,func).arrange(RIGHT).next_to(texs[2]).shift(DOWN*0.5)
         
+        self.wait(1)
         self.play(Create(texs[:-1]),run_time=2)
+        self.wait(1)
         self.play(Create(brace_func),run_time=1)
+        self.wait(1)
         ref = func.copy()
         self.play(Transform(ref,texs[-1]),run_time=1)
+        self.wait(1)
         self.add(sqrd)
         self.play(self.camera.frame.animate.scale(0.5).move_to(sqrd).shift(RIGHT),FadeOut(texs,ref,brace_func), run_time=1)
+        self.wait(1)
         self.play(Create(sum_tex))
         self.wait(1)
         
@@ -152,7 +157,7 @@ class Vectors(ThreeDScene):
         axes = ThreeDAxes()
         vec1, vec2 = [3/2,0,0], [0,2/3,0]
         matrix = np.array([[(np.sqrt(3)/2)*np.cos(np.pi/18),(np.sqrt(2))*np.cos(np.pi/9),0], [(np.sqrt(3)/2)*np.sin(np.pi/18),(np.sqrt(2))*np.sin(np.pi/9),0],[0,0,1]]).round(2)
-        a = PI/0.75
+        a = PI/1.5
         axis = X_AXIS+Z_AXIS
         rot_matrix = rotation_matrix(a, axis)
         
@@ -188,7 +193,7 @@ class Vectors(ThreeDScene):
         
         # show 3d perspective
         self.move_camera(phi=45 * DEGREES,theta=-75 * DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.25)
+        #self.begin_ambient_camera_rotation(rate=0.25)
         
         # rotate vectors in 3D
         vec1 = np.matmul(rot_matrix,vec1) 
@@ -218,7 +223,7 @@ class Vectors(ThreeDScene):
 class VectorLabel(Scene):
     def playWait(self, *args,**kwargs):
             self.play(*args,**kwargs)
-            self.wait(0.1)
+            self.wait(1)
     
     def construct(self):
         
