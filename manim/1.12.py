@@ -70,6 +70,27 @@ class RiemannZeta(Scene):
 
         self.wait(5)
         
+        bounds = (-10, 10)
+        size = (5, 5)
+
+        array1 = np.random.uniform(*bounds,size=size)
+        array2 = np.random.uniform(*bounds,size=size)
+        array1 = np.tril(array1.T) + np.triu(array1, 1)
+        array2 = np.tril(array2.T,-1) + np.triu(array2*-1, 1)
+        symetric_conj = [[str(int(array1[x][y]))+("+"*(int(array2[x][y])>=0)+str(int(array2[x][y]))+"i")*(x!=y) for y in range(size[1])] for x in range(size[0])]
+        complex_symetric_matrix = Matrix(symetric_conj, h_buff = 2.6).scale(0.5)
+
+        self.playwait(Write(complex_symetric_matrix))
+
+        wList = []
+        for x in range(size[0]):
+            for y in range(size[1]):
+                if x != y:
+                    wList.append(complex_symetric_matrix[0][x*size[0]+y])
+        self.playwait(*[Wiggle(wList[i], scale_value=1.2, rotation_angle=0.02*TAU) for i in range(len(wList))])
+        
+
+
     def playwait(self, *args, **kwargs):
         self.play(*args, **kwargs)
         self.wait()
