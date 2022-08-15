@@ -26,7 +26,7 @@ class Pain(Scene):
 
 
         mainPoints = [MathTex("\\text{Independent} \lambda"), MathTex("\\text{Dependent} \lambda"), MathTex("\\text{2x2}"), MathTex("\\text{NxN}")]
-        VGroup(*mainPoints).arrange_in_grid(rows=2, cols=2, buff=MED_LARGE_BUFF)
+        VGroup(*mainPoints).arrange_in_grid(rows=4, cols=1, buff=MED_LARGE_BUFF)
         for i in range(len(mainPoints)):
             self.play(Write(mainPoints[i]))
         self.wait(1)
