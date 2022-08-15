@@ -37,14 +37,37 @@ class RiemannZeta(Scene):
         self.playwait(Write(func1))
         
         lhs1 = Rectangle(height=config.frame_height, width=config.frame_width, stroke_width=0, fill_color=RED, fill_opacity=0.5).next_to(x1, buff=0, direction=LEFT)
+        func2 = Tex(r"= Divergent").next_to(funcRight)
         self.playwait(FadeIn(lhs1), FadeOut(rhs1), FadeOut(func1))
+        self.playwait(Write(func2))
         
-        self.playwait(FadeOut(lhs1, x1))
+
+        eq159 = MathTex(r"\zeta(z) =", r"\prod_{\text{primes } p} \left(\sum_{k = 0}^{\infty} \frac{1}{p^k}\right)")
+        self.playwait(FadeOut(lhs1, x1, func2, plane, funcRight, scale=0.5), TransformMatchingTex(funcTex, eq159))
         # return
         
+        self.playwait(FadeOut(eq159), FadeIn(plane, scale=1.5))
         
-        self.play(Create(ParametricFunction(lambda x: plane.n2p(mpmath.zeta(0.5+1j*x)), t_range=[0, 100]).set_color([PINK,YELLOW])), run_time=15)
+        dots = [Dot([-2*i-2, 0, 0]) for i in range(3)]
+        self.playwait(FadeIn(*dots, scale=0.5))
+
+        stripRect = Rectangle(height=config.frame_height, width=plane.n2p(1)[0], stroke_width=0, fill_color=BLUE, fill_opacity=0.5).next_to(x1, buff=0, direction=LEFT)
+        self.playwait(FadeOut(*dots, scale=1.5), FadeIn(stripRect))
+
+        x5 = Line(config.top, config.bottom).shift(plane.n2p(0.5)).set_color(RED)
+        self.playwait(FadeIn(x5), FadeOut(stripRect))
+
+        rzFunc = ParametricFunction(lambda x: plane.n2p(mpmath.zeta(0.5+1j*x)), t_range=[0, 100]).set_color([PINK,YELLOW])
+        self.play(FadeOut(x5))
+        self.playwait(Create(rzFunc), run_time=15)
+
+        self.play(FadeOut(rzFunc), FadeIn(x5))
+        self.playwait(Wiggle(x5))
         
+        self.playwait(FadeOut(plane, x5))
+
+        # self.add(Tex("Fade in chart 2 from 1.9cars.py\n along with Figure 3 from 1_12 in slack"))
+
         self.wait(5)
         
     def playwait(self, *args, **kwargs):
