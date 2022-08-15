@@ -100,9 +100,10 @@ class Cars(Scene):
 
         self.play(t.animate(rate_func=rate_functions.ease_in_expo).set_value(iterations-1), run_time=7)
         self.wait(0.5)
-        poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(LEFT*4.0+UP*0.1)
+        poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(RIGHT*2+UP*0.1)
         self.play(Create(poissonFunc))
         self.wait(3)
+        poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(LEFT*4.0+UP*0.1)
         # return
         self.play(*[FadeOut(x, shift=LEFT*10) for x in self.mobjects])
 
@@ -165,12 +166,14 @@ class Cars(Scene):
         self.add(chart, NTex, x_label, y_label)
         xPrev_label = chartPrev.get_x_axis_label("s", direction=RIGHT)
         yPrev_label = chartPrev.get_y_axis_label("P(s)", direction=UP)
-        self.play(FadeIn(chartPrev, shift=RIGHT), FadeIn(xPrev_label, shift=RIGHT), FadeIn(yPrev_label, shift=RIGHT))
+        
 
 
-        poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(LEFT*4.0+UP*0.1)
+        # poissonFunc = ParametricFunction(lambda x: (x*0.5, 5.3*np.exp(-x), 0), t_range=[0, 3.5]).move_to(LEFT*4.0+UP*0.1)
         gaussianFunc = ParametricFunction(lambda x: (x*0.75, 0.98*6.5*0.5*np.pi*x*np.exp(-0.25*np.pi*x*x), 0), t_range=[0, 3]).move_to(RIGHT*2.25+DOWN*1.25+UP*1.2+LEFT*0.1)
-        self.play(Create(poissonFunc), Create(gaussianFunc), run_time=3)
+        self.play(Create(gaussianFunc), run_time=3)
+
+        self.play(FadeIn(chartPrev, xPrev_label, yPrev_label, poissonFunc, shift=RIGHT))
 
         # poissonTex = MathTex("\lim_{s\\rightarrow0} P_{Poisson}(s) = 1").next_to(chartPrev, direction=DOWN)
         poissonTex = MathTex("P(s) \propto e^{-s}").next_to(chartPrev, direction=DOWN)
