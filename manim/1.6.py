@@ -33,13 +33,13 @@ class Intro(Scene):
         self.wait(1)
 
 
-class ShowEnsemble(MovingCameraScene):
+class ShowEnsembleSecond2(MovingCameraScene):
     def playWait(self, *args,**kwargs):
             self.play(*args,**kwargs)
             self.wait(1)
             
     def construct(self):
-        N = 5 # size of matrix   
+        N = 2 # size of matrix   
         niter = 5000 # number of samples
         dets = np.zeros((niter))
         histograms = np.zeros((niter,100))
@@ -55,7 +55,7 @@ class ShowEnsemble(MovingCameraScene):
         
         
         equals_tex = Tex("M = ")
-        matrix = ChangingMatrix(matricies,t).scale(0.25).next_to(equals_tex)
+        matrix = ChangingMatrix(matricies,t).next_to(equals_tex)
         sqrd = MathTex("Tr(M^2) =")
         tr_tex = DecimalNumber().add_updater(lambda d: d.set_value(dets[int(t.get_value())])).next_to(sqrd).update()
         n_tex = Tex("N: ")
@@ -97,9 +97,9 @@ class ShowEnsemble(MovingCameraScene):
         arrow = CurvedArrow(entry.get_center(),axes1.c2p(0.8,0.8), color = YELLOW)
         entry_equivalence_tex = MathTex("Tr(M^2) = \sum \lambda_i^2").scale(0.75).next_to(entry, DOWN)
         eiegen_equivalence_tex1 = MathTex("\lambda_{\pm} &= \\frac{M_{11} +M_{22}}{2} \pm \\frac{1}{2}\sqrt{(M_{11}-M_{22})^2 + 4M_{12}^2}").scale(0.5).next_to(axes1, DOWN).shift(RIGHT*2)
-        eiegen_equivalence_tex2 = MathTex("\lambda \propto", "f(M_{11}...M_{22})").next_to(axes1, DOWN)
-        eiegen_equivalence_tex3 = MathTex("\lambda \propto", "f(M_{11}...M_{nn})").next_to(axes1, DOWN)
-        eiegen_equivalence_tex4 = MathTex("\lambda \propto", "\sqrt{n}").next_to(axes1, DOWN)
+        eiegen_equivalence_tex2 = MathTex("\lambda \sim", "f(M_{11}...M_{22})").next_to(axes1, DOWN)
+        eiegen_equivalence_tex3 = MathTex("\lambda \sim", "f(M_{11}...M_{NN})").next_to(axes1, DOWN)
+        eiegen_equivalence_tex4 = MathTex("\lambda \sim", "\sqrt{N}").next_to(axes1, DOWN)
         guas = axes1.plot(lambda x: np.exp(-(x/3)**2),color=BLUE)
         guas_area = axes1.get_area(guas)
         
@@ -117,7 +117,7 @@ class ShowList(MovingCameraScene):
         strings = ["det(M)", "Tr(M)","Tr(M^\dagger M)", "Tr(M^2)","...","Tr(M^k)", "\\text{eigenvectors} = v : Mv = Lv \\text{ for some } L"]
         texs = VGroup(*[MathTex(str(i+1)+"\\text{. }"+s) for i,s in enumerate(strings)]).arrange(DOWN,aligned_edge=LEFT,buff=0.5).to_edge(UL)
        
-        sqrd = MathTex("Tr(M^2)").move_to(texs[2],RIGHT)
+        sqrd = MathTex("Tr(M^2)").move_to(texs[3],RIGHT)
         sum_tex = MathTex("= \sum \lambda_i^2").next_to(sqrd)
         
         brace = Tex("\left\}").scale(10)
